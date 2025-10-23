@@ -1,35 +1,59 @@
 import { useState } from 'react';
+import Header from './components/Header';
 import ReporteForm from './components/ReporteForm';
 import TablaReporte from './components/TablaReporte';
+import Dashboard from './components/Dashboard';
 import './App.css';
 
 function App() {
+  const [vistaActual, setVistaActual] = useState('reportes');
   const [reporteData, setReporteData] = useState(null);
 
   const handleReporteGenerado = (data) => {
     setReporteData(data);
   };
 
+  const manejarCambioVista = (nuevaVista) => {
+    setVistaActual(nuevaVista);
+    // Limpiar datos del reporte si cambiamos de vista
+    if (nuevaVista !== 'reportes') {
+      setReporteData(null);
+    }
+  };
+
+  const renderizarContenido = () => {
+    switch (vistaActual) {
+      case 'dashboard':
+        return <Dashboard />;
+      case 'reportes':
+      default:
+        return (
+          <main className="container">
+            <div className="form-section">
+              <ReporteForm onReporteGenerado={handleReporteGenerado} />
+            </div>
+            
+            <div className="results-section">
+              {reporteData && (
+                <TablaReporte
+                  datos={reporteData.datos}
+                  totalRegistros={reporteData.total_registros}
+                />
+              )}
+            </div>
+          </main>
+        );
+    }
+  };
+
   return (
     <div className="App">
-      <header>
-        <h1>Sistema de Reportes MongoDB</h1>
-      </header>
+      <Header 
+        vistaActual={vistaActual} 
+        onCambiarVista={manejarCambioVista} 
+      />
       
-      <main className="container">
-        <div className="form-section">
-          <ReporteForm onReporteGenerado={handleReporteGenerado} />
-        </div>
-        
-        <div className="results-section">
-          {reporteData && (
-            <TablaReporte
-              datos={reporteData.datos}
-              totalRegistros={reporteData.total_registros}
-            />
-          )}
-        </div>
-      </main>
+      {renderizarContenido()}
     </div>
   );
 }
