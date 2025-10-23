@@ -16,6 +16,12 @@ export const reportesAPI = {
     api.get(`/reportes/estadisticas/${coleccion}`),
   
   generarReporte: (datos) => api.post('/reportes/generar', datos),
+  
+  obtenerEsquemaColeccion: (coleccion) =>
+    api.get(`/reportes/esquema/${coleccion}`),
+  
+  obtenerValoresUnicos: (coleccion, campo) =>
+    api.get(`/reportes/valores-unicos/${coleccion}/${campo}`),
 };
 
 export default api;
