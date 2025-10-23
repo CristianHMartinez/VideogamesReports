@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { reportesAPI } from '../services/api';
+import FiltrosAvanzados from './FiltrosAvanzados';
 import './ReporteForm.css';
 
 function ReporteForm({ onReporteGenerado }) {
   const [colecciones, setColecciones] = useState([]);
   const [coleccionSeleccionada, setColeccionSeleccionada] = useState('');
   const [campos, setCampos] = useState([]);
-  const [filtros, setFiltros] = useState('{}');
+  const [filtrosAvanzados, setFiltrosAvanzados] = useState({});
   const [limite, setLimite] = useState(100);
   const [loading, setLoading] = useState(false);
 
@@ -37,10 +38,9 @@ function ReporteForm({ onReporteGenerado }) {
     setLoading(true);
 
     try {
-      const filtrosObj = JSON.parse(filtros);
       const response = await reportesAPI.generarReporte({
         coleccion: coleccionSeleccionada,
-        filtros: filtrosObj,
+        filtros: filtrosAvanzados,
         limite: parseInt(limite),
       });
 
@@ -51,6 +51,10 @@ function ReporteForm({ onReporteGenerado }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const manejarCambioFiltros = (nuevosFiltros) => {
+    setFiltrosAvanzados(nuevosFiltros);
   };
 
   return (
@@ -64,6 +68,8 @@ function ReporteForm({ onReporteGenerado }) {
           onChange={(e) => {
             setColeccionSeleccionada(e.target.value);
             cargarEstadisticas(e.target.value);
+            // Limpiar filtros cuando cambia la colección
+            setFiltrosAvanzados({});
           }}
           required
         >
@@ -76,15 +82,11 @@ function ReporteForm({ onReporteGenerado }) {
         </select>
       </div>
 
-      <div className="form-group">
-        <label>Filtros (JSON):</label>
-        <textarea
-          value={filtros}
-          onChange={(e) => setFiltros(e.target.value)}
-          placeholder='{"campo": "valor"}'
-          rows={4}
-        />
-      </div>
+      <FiltrosAvanzados 
+        coleccion={coleccionSeleccionada}
+        onFiltrosChange={manejarCambioFiltros}
+        filtrosIniciales={filtrosAvanzados}
+      />
 
       <div className="form-group">
         <label>Límite de registros:</label>
