@@ -40,3 +40,28 @@ async def generar_reporte(
         return resultado
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/esquema/{coleccion}")
+async def obtener_esquema_coleccion(
+    coleccion: str,
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Obtiene el esquema (campos) de una colección"""
+    try:
+        service = ReporteService(db)
+        return await service.obtener_esquema_coleccion(coleccion)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/valores-unicos/{coleccion}/{campo}")
+async def obtener_valores_unicos(
+    coleccion: str,
+    campo: str,
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Obtiene valores únicos de un campo específico"""
+    try:
+        service = ReporteService(db)
+        return await service.obtener_valores_unicos(coleccion, campo)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
