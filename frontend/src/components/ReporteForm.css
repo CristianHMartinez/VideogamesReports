@@ -1,0 +1,124 @@
+/* ReporteForm.css - Estilos específicos para el componente ReporteForm */
+
+.reporte-form {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.reporte-form h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.reporte-form button {
+  width: 100%;
+  padding: 1rem;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-weight: 600;
+}
+
+.reporte-form button:hover:not(:disabled) {
+  background: #2980b9;
+}
+
+.reporte-form button:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+}
+
+.campos-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #ecf0f1;
+  border-radius: 4px;
+}
+
+.campos-info h4 {
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.campos-info p {
+  margin: 0;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+/* Estilos específicos para inputs de fecha */
+.form-group input[type="date"] {
+  color: #333;
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+/* Loading state */
+.reporte-form button.loading {
+  position: relative;
+  color: transparent;
+}
+
+.reporte-form button.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ffffff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
