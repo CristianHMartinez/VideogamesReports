@@ -24,7 +24,11 @@ function App() {
   const renderizarContenido = () => {
     switch (vistaActual) {
       case 'dashboard':
-        return <Dashboard />;
+        return (
+          <main className="dashboard-container">
+            <Dashboard onCambiarVista={manejarCambioVista} />
+          </main>
+        );
       case 'reportes':
       default:
         return (

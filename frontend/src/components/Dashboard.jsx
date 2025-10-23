@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { reportesAPI } from '../services/api';
 import './Dashboard.css';
 
-function Dashboard() {
+function Dashboard({ onCambiarVista }) {
   const [colecciones, setColecciones] = useState([]);
   const [estadisticas, setEstadisticas] = useState({});
   const [loading, setLoading] = useState(true);
@@ -146,7 +146,10 @@ function Dashboard() {
         <div className="seccion-accesos-rapidos">
           <h3>Accesos Rápidos</h3>
           <div className="accesos-grid">
-            <button className="acceso-rapido reportes">
+            <button 
+              className="acceso-rapido reportes"
+              onClick={() => onCambiarVista && onCambiarVista('reportes')}
+            >
               <span className="acceso-icono">📋</span>
               <div>
                 <h4>Generar Reporte</h4>
