@@ -51,6 +51,21 @@ class ReporteService:
         }
     
     async def obtener_colecciones(self):
+        """Obtiene la lista de colecciones disponibles en la base de datos"""
+        try:
+            colecciones = await self.db.list_collection_names()
+            return {
+                "success": True,
+                "colecciones": colecciones
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "colecciones": [],
+                "error": str(e)
+            }
+    
+    async def obtener_colecciones(self):
         """Obtiene la lista de colecciones disponibles"""
         colecciones = await self.db.list_collection_names()
         return {"colecciones": colecciones}
@@ -69,3 +84,71 @@ class ReporteService:
             "total_documentos": total,
             "campos_disponibles": campos
         }
+
+    async def obtener_esquema_coleccion(self, coleccion: str):
+        """Obtiene el esquema (campos) de una colección"""
+        try:
+            collection = self.db[coleccion]
+            
+            # Obtener algunos documentos de muestra para extraer todos los campos posibles
+            muestras = await collection.find({}).limit(100).to_list(length=100)
+            
+            if not muestras:
+                return {
+                    "success": True,
+                    "campos": [],
+                    "mensaje": "La colección está vacía"
+                }
+            
+            # Combinar todos los campos únicos de las muestras
+            todos_los_campos = set()
+            for doc in muestras:
+                todos_los_campos.update(doc.keys())
+            
+            # Filtrar _id ya que no suele ser útil para filtros
+            campos = [campo for campo in sorted(todos_los_campos) if campo != '_id']
+            
+            return {
+                "success": True,
+                "campos": campos,
+                "total_documentos": len(muestras)
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "campos": [],
+                "error": str(e)
+            }
+
+    async def obtener_valores_unicos(self, coleccion: str, campo: str):
+        """Obtiene valores únicos de un campo específico"""
+        try:
+            collection = self.db[coleccion]
+            
+            # Usar agregación para obtener valores únicos
+            pipeline = [
+                {"$group": {"_id": f"${campo}"}},
+                {"$match": {"_id": {"$ne": None}}},  # Excluir valores nulos
+                {"$sort": {"_id": 1}},
+                {"$limit": 1000}  # Limitar a 1000 valores únicos
+            ]
+            
+            cursor = collection.aggregate(pipeline)
+            resultados = await cursor.to_list(length=1000)
+            
+            # Extraer los valores únicos
+            valores = [doc["_id"] for doc in resultados if doc["_id"] is not None]
+            
+            return {
+                "success": True,
+                "valores": valores,
+                "total_valores": len(valores)
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "valores": [],
+                "error": str(e)
+            }
