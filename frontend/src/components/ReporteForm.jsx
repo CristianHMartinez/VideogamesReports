@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { reportesAPI } from '../services/api';
+import './ReporteForm.css';
 
 function ReporteForm({ onReporteGenerado }) {
   const [colecciones, setColecciones] = useState([]);
