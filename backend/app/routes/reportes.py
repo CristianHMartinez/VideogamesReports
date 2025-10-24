@@ -171,3 +171,42 @@ async def metricas_dashboard(
         return await service.obtener_metricas_dashboard(coleccion)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/hidden-gems/{coleccion}")
+async def hidden_gems(
+    coleccion: str,
+    limite: int = 5,
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Obtiene juegos 'Hidden Gems': alto rating pero pocas reviews."""
+    try:
+        service = ReporteService(db)
+        return await service.obtener_hidden_gems(coleccion, limite)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/trending-games/{coleccion}")
+async def trending_games(
+    coleccion: str,
+    limite: int = 5,
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Obtiene juegos 'Trending': juegos recientes con buena recepción."""
+    try:
+        service = ReporteService(db)
+        return await service.obtener_trending_games(coleccion, limite)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/top-rated-games/{coleccion}")
+async def top_rated_games(
+    coleccion: str,
+    limite: int = 5,
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Obtiene juegos 'Top Rated': los juegos con mejores calificaciones."""
+    try:
+        service = ReporteService(db)
+        return await service.obtener_top_rated_games(coleccion, limite)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

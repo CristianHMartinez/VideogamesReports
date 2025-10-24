@@ -923,3 +923,274 @@ class ReporteService:
                 "total_juegos": 0,
                 "error": str(e)
             }
+
+    async def obtener_hidden_gems(self, nombre_coleccion: str, limite: int = 5) -> Dict[str, Any]:
+        """
+        Obtiene juegos 'Hidden Gems': alto rating pero pocas reviews (joyas ocultas)
+        """
+        try:
+            coleccion = self.db[nombre_coleccion]
+            
+            pipeline = [
+                {
+                    "$addFields": {
+                        "rating_normalizado": {
+                            "$cond": {
+                                "if": {"$and": [
+                                    {"$ne": ["$Rating", None]}, 
+                                    {"$ne": ["$Rating", ""]},
+                                    {"$ne": ["$Rating", "N/A"]},
+                                    {"$ne": ["$Rating", "TBD"]},
+                                    {"$not": {"$eq": [{"$type": "$Rating"}, "string"]}}
+                                ]},
+                                "then": {
+                                    "$cond": {
+                                        "if": {"$isNumber": "$Rating"},
+                                        "then": "$Rating",
+                                        "else": {
+                                            "$convert": {
+                                                "input": "$Rating",
+                                                "to": "double",
+                                                "onError": 0
+                                            }
+                                        }
+                                    }
+                                },
+                                "else": 0
+                            }
+                        },
+                        "reviews_normalizado": {
+                            "$cond": {
+                                "if": {"$and": [
+                                    {"$ne": ["$Reviews", None]}, 
+                                    {"$ne": ["$Reviews", ""]},
+                                    {"$isNumber": "$Reviews"}
+                                ]},
+                                "then": "$Reviews",
+                                "else": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "Title": {"$ne": None, "$ne": ""},
+                        "rating_normalizado": {"$gte": 4.0},  # Rating alto
+                        "reviews_normalizado": {"$lte": 500}  # Pocas reviews
+                    }
+                },
+                {"$sort": {"rating_normalizado": -1, "reviews_normalizado": 1}},
+                {"$limit": limite},
+                {
+                    "$project": {
+                        "_id": 0,
+                        "titulo": "$Title",
+                        "rating": "$rating_normalizado",
+                        "reviews": "$reviews_normalizado",
+                        "generos": "$Genres"
+                    }
+                }
+            ]
+            
+            cursor = coleccion.aggregate(pipeline)
+            resultados = await cursor.to_list(length=limite)
+            
+            return {
+                "success": True,
+                "juegos": resultados,
+                "total": len(resultados)
+            }
+            
+        except Exception as e:
+            print(f"Error en obtener_hidden_gems: {str(e)}")
+            return {
+                "success": False,
+                "juegos": [],
+                "error": str(e)
+            }
+
+    async def obtener_trending_games(self, nombre_coleccion: str, limite: int = 5) -> Dict[str, Any]:
+        """
+        Obtiene juegos 'Trending': juegos recientes (2020+) con buena recepción
+        """
+        try:
+            coleccion = self.db[nombre_coleccion]
+            
+            pipeline = [
+                {
+                    "$addFields": {
+                        "rating_normalizado": {
+                            "$cond": {
+                                "if": {"$and": [
+                                    {"$ne": ["$Rating", None]}, 
+                                    {"$ne": ["$Rating", ""]},
+                                    {"$ne": ["$Rating", "N/A"]},
+                                    {"$ne": ["$Rating", "TBD"]},
+                                    {"$not": {"$eq": [{"$type": "$Rating"}, "string"]}}
+                                ]},
+                                "then": {
+                                    "$cond": {
+                                        "if": {"$isNumber": "$Rating"},
+                                        "then": "$Rating",
+                                        "else": {
+                                            "$convert": {
+                                                "input": "$Rating",
+                                                "to": "double",
+                                                "onError": 0
+                                            }
+                                        }
+                                    }
+                                },
+                                "else": 0
+                            }
+                        },
+                        "anio_lanzamiento": {
+                            "$cond": {
+                                "if": {"$ne": ["$Release_Date", None]},
+                                "then": {
+                                    "$let": {
+                                        "vars": {
+                                            "match": {
+                                                "$regexFind": {
+                                                    "input": {"$toString": "$Release_Date"},
+                                                    "regex": "\\d{4}"
+                                                }
+                                            }
+                                        },
+                                        "in": {
+                                            "$cond": {
+                                                "if": {"$ne": ["$$match", None]},
+                                                "then": {
+                                                    "$toInt": "$$match.match"
+                                                },
+                                                "else": 0
+                                            }
+                                        }
+                                    }
+                                },
+                                "else": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "Title": {"$ne": None, "$ne": ""},
+                        "rating_normalizado": {"$gte": 3.5},
+                        "anio_lanzamiento": {"$gte": 2020}  # Juegos recientes
+                    }
+                },
+                {"$sort": {"anio_lanzamiento": -1, "rating_normalizado": -1}},
+                {"$limit": limite},
+                {
+                    "$project": {
+                        "_id": 0,
+                        "titulo": "$Title",
+                        "rating": "$rating_normalizado",
+                        "anio": "$anio_lanzamiento",
+                        "generos": "$Genres"
+                    }
+                }
+            ]
+            
+            cursor = coleccion.aggregate(pipeline)
+            resultados = await cursor.to_list(length=limite)
+            
+            return {
+                "success": True,
+                "juegos": resultados,
+                "total": len(resultados)
+            }
+            
+        except Exception as e:
+            print(f"Error en obtener_trending_games: {str(e)}")
+            return {
+                "success": False,
+                "juegos": [],
+                "error": str(e)
+            }
+
+    async def obtener_top_rated_games(self, nombre_coleccion: str, limite: int = 5) -> Dict[str, Any]:
+        """
+        Obtiene juegos 'Top Rated': los juegos con mejores calificaciones
+        """
+        try:
+            coleccion = self.db[nombre_coleccion]
+            
+            pipeline = [
+                {
+                    "$addFields": {
+                        "rating_normalizado": {
+                            "$cond": {
+                                "if": {"$and": [
+                                    {"$ne": ["$Rating", None]}, 
+                                    {"$ne": ["$Rating", ""]},
+                                    {"$ne": ["$Rating", "N/A"]},
+                                    {"$ne": ["$Rating", "TBD"]},
+                                    {"$not": {"$eq": [{"$type": "$Rating"}, "string"]}}
+                                ]},
+                                "then": {
+                                    "$cond": {
+                                        "if": {"$isNumber": "$Rating"},
+                                        "then": "$Rating",
+                                        "else": {
+                                            "$convert": {
+                                                "input": "$Rating",
+                                                "to": "double",
+                                                "onError": 0
+                                            }
+                                        }
+                                    }
+                                },
+                                "else": 0
+                            }
+                        },
+                        "reviews_normalizado": {
+                            "$cond": {
+                                "if": {"$and": [
+                                    {"$ne": ["$Reviews", None]}, 
+                                    {"$ne": ["$Reviews", ""]},
+                                    {"$isNumber": "$Reviews"}
+                                ]},
+                                "then": "$Reviews",
+                                "else": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "Title": {"$ne": None, "$ne": ""},
+                        "rating_normalizado": {"$gte": 4.0},
+                        "reviews_normalizado": {"$gte": 100}  # Al menos 100 reviews para ser confiable
+                    }
+                },
+                {"$sort": {"rating_normalizado": -1, "reviews_normalizado": -1}},
+                {"$limit": limite},
+                {
+                    "$project": {
+                        "_id": 0,
+                        "titulo": "$Title",
+                        "rating": "$rating_normalizado",
+                        "reviews": "$reviews_normalizado",
+                        "generos": "$Genres"
+                    }
+                }
+            ]
+            
+            cursor = coleccion.aggregate(pipeline)
+            resultados = await cursor.to_list(length=limite)
+            
+            return {
+                "success": True,
+                "juegos": resultados,
+                "total": len(resultados)
+            }
+            
+        except Exception as e:
+            print(f"Error en obtener_top_rated_games: {str(e)}")
+            return {
+                "success": False,
+                "juegos": [],
+                "error": str(e)
+            }

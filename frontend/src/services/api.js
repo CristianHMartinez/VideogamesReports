@@ -46,6 +46,15 @@ export const reportesAPI = {
 
   metricasDashboard: (coleccion) =>
     api.get(`/reportes/metricas-dashboard/${coleccion}`),
+
+  hiddenGems: (coleccion, limite = 5) =>
+    api.get(`/reportes/hidden-gems/${coleccion}`, { params: { limite } }),
+
+  trendingGames: (coleccion, limite = 5) =>
+    api.get(`/reportes/trending-games/${coleccion}`, { params: { limite } }),
+
+  topRatedGames: (coleccion, limite = 5) =>
+    api.get(`/reportes/top-rated-games/${coleccion}`, { params: { limite } }),
 };
 
 export default api;

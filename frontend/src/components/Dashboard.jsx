@@ -5,6 +5,7 @@ import BarChart from './charts/BarChart';
 import DonutChart from './charts/DonutChart';
 import HorizontalBarChart from './charts/HorizontalBarChart';
 import TopJuegosTabla from './TopJuegosTabla';
+import MiniCard from './MiniCard';
 import './Dashboard.css';
 
 // Nuevo layout del Dashboard con secciones y placeholders
@@ -23,6 +24,9 @@ function Dashboard({ onCambiarVista }) {
     reviews_totales: 0,
     juegos_2024: 0
   });
+  const [hiddenGems, setHiddenGems] = useState([]);
+  const [trendingGames, setTrendingGames] = useState([]);
+  const [topRatedGames, setTopRatedGames] = useState([]);
 
   useEffect(() => {
     cargarDatosDashboard();
@@ -169,6 +173,39 @@ function Dashboard({ onCambiarVista }) {
             juegos_2024: 0
           });
         }
+
+        // Cargar Hidden Gems
+        try {
+          const rHidden = await reportesAPI.hiddenGems(preferida, 5);
+          console.log('Respuesta hidden gems:', rHidden);
+          const hiddenData = rHidden.data?.juegos || [];
+          setHiddenGems(hiddenData);
+        } catch (e) {
+          console.error('Error cargando hidden gems:', e);
+          setHiddenGems([]);
+        }
+
+        // Cargar Trending Games
+        try {
+          const rTrending = await reportesAPI.trendingGames(preferida, 5);
+          console.log('Respuesta trending games:', rTrending);
+          const trendingData = rTrending.data?.juegos || [];
+          setTrendingGames(trendingData);
+        } catch (e) {
+          console.error('Error cargando trending games:', e);
+          setTrendingGames([]);
+        }
+
+        // Cargar Top Rated Games
+        try {
+          const rTopRated = await reportesAPI.topRatedGames(preferida, 5);
+          console.log('Respuesta top rated games:', rTopRated);
+          const topRatedData = rTopRated.data?.juegos || [];
+          setTopRatedGames(topRatedData);
+        } catch (e) {
+          console.error('Error cargando top rated games:', e);
+          setTopRatedGames([]);
+        }
       }
     } catch (e) {
       console.error('Error cargando datos del dashboard:', e);
@@ -281,16 +318,28 @@ function Dashboard({ onCambiarVista }) {
       {/* Mini-cards */}
       <section className="section-grid-3">
         <article className="panel">
-          <header className="panel-header">🔹 Hidden Gems</header>
-          <div className="panel-body placeholder">[Mini Cards]</div>
+          <MiniCard
+            title="Hidden Gems"
+            icon="🔹"
+            data={hiddenGems}
+            tipo="hidden"
+          />
         </article>
         <article className="panel">
-          <header className="panel-header">🔥 Trending</header>
-          <div className="panel-body placeholder">[Mini Cards]</div>
+          <MiniCard
+            title="Trending"
+            icon="🔥"
+            data={trendingGames}
+            tipo="trending"
+          />
         </article>
         <article className="panel">
-          <header className="panel-header">⭐ Top Rated</header>
-          <div className="panel-body placeholder">[Mini Cards]</div>
+          <MiniCard
+            title="Top Rated"
+            icon="⭐"
+            data={topRatedGames}
+            tipo="toprated"
+          />
         </article>
       </section>
 
