@@ -107,3 +107,16 @@ async def conteo_generos(
         return await service.obtener_conteo_generos(coleccion, campo)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/rating-promedio/{coleccion}")
+async def rating_promedio(
+    coleccion: str,
+    campo: str = "Rating",
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Obtiene el rating promedio de una colección."""
+    try:
+        service = ReporteService(db)
+        return await service.obtener_rating_promedio(coleccion, campo)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -353,3 +353,100 @@ class ReporteService:
                 "conteos": [], 
                 "error": str(e)
             }
+
+    async def obtener_rating_promedio(self, coleccion: str, campo_rating: str = "Rating"):
+        """Calcula el rating promedio de todos los documentos en una colección.
+        
+        Maneja ratings como números o strings que pueden convertirse a números.
+        """
+        try:
+            collection = self.db[coleccion]
+            
+            # Primero ver una muestra de los datos
+            muestra = await collection.find({}).limit(3).to_list(length=3)
+            print(f"Muestra de {campo_rating}:")
+            for doc in muestra:
+                rating_val = doc.get(campo_rating)
+                print(f"  Tipo: {type(rating_val)}, Valor: {rating_val}")
+            
+            # Pipeline para calcular promedio, manejando strings y números
+            pipeline = [
+                {
+                    "$addFields": {
+                        "__ratingNum": {
+                            "$cond": {
+                                "if": {"$eq": [{"$type": f"${campo_rating}"}, "string"]},
+                                "then": {
+                                    "$toDouble": {
+                                        "$cond": {
+                                            "if": {"$regexMatch": {"input": f"${campo_rating}", "regex": "^[0-9]+(\\.[0-9]+)?$"}},
+                                            "then": f"${campo_rating}",
+                                            "else": None
+                                        }
+                                    }
+                                },
+                                "else": {
+                                    "$cond": {
+                                        "if": {"$or": [
+                                            {"$eq": [{"$type": f"${campo_rating}"}, "double"]},
+                                            {"$eq": [{"$type": f"${campo_rating}"}, "int"]},
+                                            {"$eq": [{"$type": f"${campo_rating}"}, "long"]},
+                                            {"$eq": [{"$type": f"${campo_rating}"}, "decimal"]}
+                                        ]},
+                                        "then": {"$toDouble": f"${campo_rating}"},
+                                        "else": None
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "__ratingNum": {"$ne": None, "$gte": 0, "$lte": 10}
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": None,
+                        "promedio": {"$avg": "$__ratingNum"},
+                        "total_ratings": {"$sum": 1},
+                        "min_rating": {"$min": "$__ratingNum"},
+                        "max_rating": {"$max": "$__ratingNum"}
+                    }
+                }
+            ]
+
+            print(f"Pipeline rating promedio para {coleccion}:")
+            print(pipeline)
+
+            cursor = collection.aggregate(pipeline)
+            resultados = await cursor.to_list(length=1)
+            print(f"Resultados rating: {resultados}")
+            
+            if resultados:
+                result = resultados[0]
+                promedio = round(result.get("promedio", 0), 2)
+                return {
+                    "success": True,
+                    "rating_promedio": promedio,
+                    "total_ratings": result.get("total_ratings", 0),
+                    "min_rating": result.get("min_rating", 0),
+                    "max_rating": result.get("max_rating", 0)
+                }
+            else:
+                return {
+                    "success": True,
+                    "rating_promedio": 0,
+                    "total_ratings": 0,
+                    "min_rating": 0,
+                    "max_rating": 0
+                }
+            
+        except Exception as e:
+            print(f"Error en obtener_rating_promedio: {str(e)}")
+            return {
+                "success": False,
+                "rating_promedio": 0,
+                "error": str(e)
+            }

@@ -11,6 +11,7 @@ function Dashboard({ onCambiarVista }) {
   const [loading, setLoading] = useState(true);
   const [seriesAnio, setSeriesAnio] = useState([]);
   const [seriesGeneros, setSeriesGeneros] = useState([]);
+  const [ratingPromedio, setRatingPromedio] = useState(0);
 
   useEffect(() => {
     cargarDatosDashboard();
@@ -77,6 +78,18 @@ function Dashboard({ onCambiarVista }) {
           console.error('Error cargando géneros:', e);
           setSeriesGeneros([]);
         }
+
+        // Cargar rating promedio
+        try {
+          const rRating = await reportesAPI.ratingPromedio(preferida, 'Rating');
+          console.log('Respuesta rating promedio:', rRating);
+          const promedio = rRating.data?.rating_promedio || 0;
+          console.log('Rating promedio:', promedio);
+          setRatingPromedio(promedio);
+        } catch (e) {
+          console.error('Error cargando rating promedio:', e);
+          setRatingPromedio(0);
+        }
       }
     } catch (e) {
       console.error('Error cargando datos del dashboard:', e);
@@ -108,7 +121,7 @@ function Dashboard({ onCambiarVista }) {
         </article>
         <article className="stat-card">
           <span className="stat-title">Rating Promedio</span>
-          <span className="stat-value">—</span>
+          <span className="stat-value">{ratingPromedio > 0 ? ratingPromedio.toFixed(1) : '—'}</span>
         </article>
         <article className="stat-card">
           <span className="stat-title">Jugadores Activos</span>

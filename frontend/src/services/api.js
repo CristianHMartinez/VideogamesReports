@@ -31,6 +31,9 @@ export const reportesAPI = {
 
   conteoGeneros: (coleccion, campo = "Genres") =>
     api.get(`/reportes/conteo-generos/${coleccion}`, { params: { campo } }),
+
+  ratingPromedio: (coleccion, campo = "Rating") =>
+    api.get(`/reportes/rating-promedio/${coleccion}`, { params: { campo } }),
 };
 
 export default api;
