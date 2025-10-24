@@ -3,6 +3,7 @@ import { reportesAPI } from '../services/api';
 import LineChart from './charts/LineChart';
 import BarChart from './charts/BarChart';
 import DonutChart from './charts/DonutChart';
+import HorizontalBarChart from './charts/HorizontalBarChart';
 import './Dashboard.css';
 
 // Nuevo layout del Dashboard con secciones y placeholders
@@ -14,6 +15,7 @@ function Dashboard({ onCambiarVista }) {
   const [seriesGeneros, setSeriesGeneros] = useState([]);
   const [ratingPromedio, setRatingPromedio] = useState(0);
   const [distribucionRating, setDistribucionRating] = useState([]);
+  const [seriesDesarrolladores, setSeriesDesarrolladores] = useState([]);
 
   useEffect(() => {
     cargarDatosDashboard();
@@ -111,6 +113,24 @@ function Dashboard({ onCambiarVista }) {
           console.error('Error cargando distribución rating:', e);
           setDistribucionRating([]);
         }
+
+        // Cargar desarrolladores
+        try {
+          const rDesarrolladores = await reportesAPI.conteoDesarrolladores(preferida, 'Developers');
+          console.log('Respuesta desarrolladores:', rDesarrolladores);
+          const desarrolladoresData = rDesarrolladores.data?.conteos || [];
+          
+          // Normalizar a {desarrollador, count}
+          const serieDesarrolladores = desarrolladoresData.map(d => ({
+            desarrollador: d.desarrollador,
+            count: d.conteo
+          }));
+          console.log('Serie desarrolladores:', serieDesarrolladores);
+          setSeriesDesarrolladores(serieDesarrolladores);
+        } catch (e) {
+          console.error('Error cargando desarrolladores:', e);
+          setSeriesDesarrolladores([]);
+        }
       }
     } catch (e) {
       console.error('Error cargando datos del dashboard:', e);
@@ -196,7 +216,13 @@ function Dashboard({ onCambiarVista }) {
         </article>
         <article className="panel">
           <header className="panel-header">📊 Top Desarrolla.</header>
-          <div className="panel-body placeholder">[Gráfico Horizontal]</div>
+          <div className="panel-body">
+            {seriesDesarrolladores.length > 0 ? (
+              <HorizontalBarChart data={seriesDesarrolladores} />
+            ) : (
+              <div className="placeholder">Sin datos de desarrolladores</div>
+            )}
+          </div>
         </article>
       </section>
 

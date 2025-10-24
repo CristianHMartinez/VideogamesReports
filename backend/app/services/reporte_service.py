@@ -566,3 +566,118 @@ class ReporteService:
                 "distribucion": [],
                 "error": str(e)
             }
+
+    async def obtener_conteo_desarrolladores(self, coleccion: str, campo_desarrolladores: str = "Developers", limite: int = 15):
+        """Devuelve conteo de desarrolladores individuales, separando desarrolladores múltiples.
+        
+        Maneja tanto arrays como strings:
+        - Array: ["FromSoftware", "Bandai Namco"] 
+        - String: "['FromSoftware', 'Bandai Namco Entertainment']"
+        """
+        try:
+            collection = self.db[coleccion]
+            
+            # Primero verificar el tipo de datos
+            muestra = await collection.find({}).limit(3).to_list(length=3)
+            print(f"Muestra de {campo_desarrolladores}:")
+            for doc in muestra:
+                dev_val = doc.get(campo_desarrolladores)
+                print(f"  Tipo: {type(dev_val)}, Valor: {dev_val}")
+            
+            # Pipeline robusto que maneja arrays y strings
+            pipeline = [
+                {
+                    "$addFields": {
+                        "__devsProcessed": {
+                            "$cond": {
+                                "if": {"$isArray": f"${campo_desarrolladores}"},
+                                # Si es array, usar directamente
+                                "then": f"${campo_desarrolladores}",
+                                # Si no es array, convertir a string y procesar
+                                "else": {
+                                    "$split": [
+                                        {
+                                            "$replaceAll": {
+                                                "input": {
+                                                    "$replaceAll": {
+                                                        "input": {
+                                                            "$replaceAll": {
+                                                                "input": {
+                                                                    "$toString": {"$ifNull": [f"${campo_desarrolladores}", ""]}
+                                                                },
+                                                                "find": "[",
+                                                                "replacement": ""
+                                                            }
+                                                        },
+                                                        "find": "]",
+                                                        "replacement": ""
+                                                    }
+                                                },
+                                                "find": "'",
+                                                "replacement": ""
+                                            }
+                                        },
+                                        ", "
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "$unwind": "$__devsProcessed"
+                },
+                {
+                    "$addFields": {
+                        "desarrollador": {
+                            "$trim": {
+                                "input": {"$toString": "$__devsProcessed"}
+                            }
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "desarrollador": {"$ne": "", "$ne": None, "$ne": "null"}
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$desarrollador",
+                        "conteo": {"$sum": 1}
+                    }
+                },
+                {
+                    "$sort": {"conteo": -1}
+                },
+                {
+                    "$limit": limite
+                }
+            ]
+
+            print(f"Pipeline desarrolladores para {coleccion}:")
+            print(pipeline)
+
+            cursor = collection.aggregate(pipeline)
+            resultados = await cursor.to_list(length=limite)
+            print(f"Resultados desarrolladores: {resultados}")
+            
+            conteos = [
+                {"desarrollador": doc.get("_id", ""), "conteo": doc.get("conteo", 0)} 
+                for doc in resultados 
+                if doc.get("_id")
+            ]
+            
+            return {
+                "success": True, 
+                "conteos": conteos, 
+                "total_desarrolladores": len(conteos)
+            }
+            
+        except Exception as e:
+            print(f"Error en obtener_conteo_desarrolladores: {str(e)}")
+            return {
+                "success": False, 
+                "conteos": [], 
+                "error": str(e)
+            }

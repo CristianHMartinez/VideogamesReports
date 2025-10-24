@@ -37,6 +37,9 @@ export const reportesAPI = {
 
   distribucionRating: (coleccion, campo = "Rating") =>
     api.get(`/reportes/distribucion-rating/${coleccion}`, { params: { campo } }),
+
+  conteoDesarrolladores: (coleccion, campo = "Developers") =>
+    api.get(`/reportes/conteo-desarrolladores/${coleccion}`, { params: { campo } }),
 };
 
 export default api;

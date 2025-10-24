@@ -133,3 +133,16 @@ async def distribucion_rating(
         return await service.obtener_distribucion_rating(coleccion, campo)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/conteo-desarrolladores/{coleccion}")
+async def conteo_desarrolladores(
+    coleccion: str,
+    campo: str = "Developers",
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Conteo de desarrolladores individuales separando desarrolladores múltiples."""
+    try:
+        service = ReporteService(db)
+        return await service.obtener_conteo_desarrolladores(coleccion, campo)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
