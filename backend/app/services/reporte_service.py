@@ -238,3 +238,118 @@ class ReporteService:
         except Exception as e:
             print(f"Error en obtener_conteo_por_anio: {str(e)}")
             return {"success": False, "conteos": [], "error": str(e)}
+
+    async def obtener_conteo_generos(self, coleccion: str, campo_generos: str = "Genres", limite: int = 20):
+        """Devuelve conteo de géneros individuales, separando géneros múltiples.
+        
+        Maneja tanto arrays como strings:
+        - Array: ["Adventure", "RPG"] 
+        - String: "['Adventure', 'RPG']" o "Adventure, RPG"
+        """
+        try:
+            collection = self.db[coleccion]
+            
+            # Primero verificar el tipo de datos
+            muestra = await collection.find({}).limit(3).to_list(length=3)
+            print(f"Muestra de {campo_generos}:")
+            for doc in muestra:
+                genero_val = doc.get(campo_generos)
+                print(f"  Tipo: {type(genero_val)}, Valor: {genero_val}")
+            
+            # Pipeline robusto que maneja arrays y strings
+            pipeline = [
+                {
+                    "$addFields": {
+                        "__genresProcessed": {
+                            "$cond": {
+                                "if": {"$isArray": f"${campo_generos}"},
+                                # Si es array, usar directamente
+                                "then": f"${campo_generos}",
+                                # Si no es array, convertir a string y procesar
+                                "else": {
+                                    "$split": [
+                                        {
+                                            "$replaceAll": {
+                                                "input": {
+                                                    "$replaceAll": {
+                                                        "input": {
+                                                            "$replaceAll": {
+                                                                "input": {
+                                                                    "$toString": {"$ifNull": [f"${campo_generos}", ""]}
+                                                                },
+                                                                "find": "[",
+                                                                "replacement": ""
+                                                            }
+                                                        },
+                                                        "find": "]",
+                                                        "replacement": ""
+                                                    }
+                                                },
+                                                "find": "'",
+                                                "replacement": ""
+                                            }
+                                        },
+                                        ", "
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "$unwind": "$__genresProcessed"
+                },
+                {
+                    "$addFields": {
+                        "genero": {
+                            "$trim": {
+                                "input": {"$toString": "$__genresProcessed"}
+                            }
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "genero": {"$ne": "", "$ne": None, "$ne": "null"}
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$genero",
+                        "conteo": {"$sum": 1}
+                    }
+                },
+                {
+                    "$sort": {"conteo": -1}
+                },
+                {
+                    "$limit": limite
+                }
+            ]
+
+            print(f"Pipeline géneros para {coleccion}:")
+            print(pipeline)
+
+            cursor = collection.aggregate(pipeline)
+            resultados = await cursor.to_list(length=limite)
+            print(f"Resultados géneros: {resultados}")
+            
+            conteos = [
+                {"genero": doc.get("_id", ""), "conteo": doc.get("conteo", 0)} 
+                for doc in resultados 
+                if doc.get("_id")
+            ]
+            
+            return {
+                "success": True, 
+                "conteos": conteos, 
+                "total_generos": len(conteos)
+            }
+            
+        except Exception as e:
+            print(f"Error en obtener_conteo_generos: {str(e)}")
+            return {
+                "success": False, 
+                "conteos": [], 
+                "error": str(e)
+            }

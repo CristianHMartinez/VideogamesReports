@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { reportesAPI } from '../services/api';
 import LineChart from './charts/LineChart';
+import BarChart from './charts/BarChart';
 import './Dashboard.css';
 
 // Nuevo layout del Dashboard con secciones y placeholders
@@ -9,6 +10,7 @@ function Dashboard({ onCambiarVista }) {
   const [estadisticas, setEstadisticas] = useState({});
   const [loading, setLoading] = useState(true);
   const [seriesAnio, setSeriesAnio] = useState([]);
+  const [seriesGeneros, setSeriesGeneros] = useState([]);
 
   useEffect(() => {
     cargarDatosDashboard();
@@ -56,6 +58,24 @@ function Dashboard({ onCambiarVista }) {
         } catch (e) {
           console.error('Error cargando conteo por año:', e);
           setSeriesAnio([]);
+        }
+
+        // Cargar conteo de géneros
+        try {
+          const rGeneros = await reportesAPI.conteoGeneros(preferida, 'Genres');
+          console.log('Respuesta géneros:', rGeneros);
+          const generosData = rGeneros.data?.conteos || [];
+          
+          // Normalizar a {genero, count}
+          const serieGeneros = generosData.map(g => ({
+            genero: g.genero,
+            count: g.conteo
+          }));
+          console.log('Serie géneros:', serieGeneros);
+          setSeriesGeneros(serieGeneros);
+        } catch (e) {
+          console.error('Error cargando géneros:', e);
+          setSeriesGeneros([]);
         }
       }
     } catch (e) {
@@ -118,7 +138,13 @@ function Dashboard({ onCambiarVista }) {
         </article>
         <article className="panel">
           <header className="panel-header">📊 Top Géneros</header>
-          <div className="panel-body placeholder">[Gráfico de Barras]</div>
+          <div className="panel-body">
+            {seriesGeneros.length > 0 ? (
+              <BarChart data={seriesGeneros} />
+            ) : (
+              <div className="placeholder">Sin datos de géneros</div>
+            )}
+          </div>
         </article>
       </section>
 

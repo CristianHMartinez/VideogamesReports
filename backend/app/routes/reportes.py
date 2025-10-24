@@ -94,3 +94,16 @@ async def conteo_por_anio(
         return await service.obtener_conteo_por_anio(coleccion, campo, formato)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/conteo-generos/{coleccion}")
+async def conteo_generos(
+    coleccion: str,
+    campo: str = "Genres",
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Conteo de géneros individuales separando géneros múltiples."""
+    try:
+        service = ReporteService(db)
+        return await service.obtener_conteo_generos(coleccion, campo)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

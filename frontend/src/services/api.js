@@ -28,6 +28,9 @@ export const reportesAPI = {
 
   conteoPorAnio: (coleccion, campo, formato = "%b %d, %Y") =>
     api.get(`/reportes/conteo-por-anio/${coleccion}/${campo}`, { params: { formato } }),
+
+  conteoGeneros: (coleccion, campo = "Genres") =>
+    api.get(`/reportes/conteo-generos/${coleccion}`, { params: { campo } }),
 };
 
 export default api;
