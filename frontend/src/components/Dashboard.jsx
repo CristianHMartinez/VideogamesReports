@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { reportesAPI } from '../services/api';
+import LineChart from './charts/LineChart';
 import './Dashboard.css';
 
+// Nuevo layout del Dashboard con secciones y placeholders
 function Dashboard({ onCambiarVista }) {
   const [colecciones, setColecciones] = useState([]);
   const [estadisticas, setEstadisticas] = useState({});
   const [loading, setLoading] = useState(true);
+  const [seriesAnio, setSeriesAnio] = useState([]);
 
   useEffect(() => {
     cargarDatosDashboard();
@@ -14,173 +17,150 @@ function Dashboard({ onCambiarVista }) {
   const cargarDatosDashboard = async () => {
     try {
       setLoading(true);
-      
-      // Obtener colecciones
-      const responseColecciones = await reportesAPI.obtenerColecciones();
+  const responseColecciones = await reportesAPI.obtenerColecciones();
       const coleccionesData = responseColecciones.data.colecciones || [];
       setColecciones(coleccionesData);
 
-      // Obtener estadísticas de cada colección
       const estadisticasPromises = coleccionesData.map(async (coleccion) => {
         try {
           const response = await reportesAPI.obtenerEstadisticas(coleccion);
-          return {
-            nombre: coleccion,
-            ...response.data
-          };
+          return { nombre: coleccion, ...response.data };
         } catch (error) {
           console.error(`Error obteniendo estadísticas de ${coleccion}:`, error);
-          return {
-            nombre: coleccion,
-            total_documentos: 0,
-            campos_disponibles: []
-          };
+          return { nombre: coleccion, total_documentos: 0 };
         }
       });
 
-      const estadisticasArray = await Promise.all(estadisticasPromises);
-      const estadisticasObj = {};
-      estadisticasArray.forEach(stat => {
-        estadisticasObj[stat.nombre] = stat;
-      });
-      
-      setEstadisticas(estadisticasObj);
-    } catch (error) {
-      console.error('Error cargando datos del dashboard:', error);
+      const statsArr = await Promise.all(estadisticasPromises);
+      const statsObj = {};
+      statsArr.forEach(s => { statsObj[s.nombre] = s; });
+      setEstadisticas(statsObj);
+
+      // Cargar conteo por año desde Release_Date
+      if (coleccionesData.length > 0) {
+        const preferida = coleccionesData.includes('Videogames') ? 'Videogames' : coleccionesData[0];
+        console.log('Intentando cargar datos de año para colección:', preferida);
+        
+        try {
+          const rAnio = await reportesAPI.conteoPorAnio(preferida, 'Release_Date');
+          console.log('Respuesta del API:', rAnio);
+          const conteos = rAnio.data?.conteos || [];
+          console.log('Conteos recibidos:', conteos);
+          
+          // Normalizar a {year, count}
+          const serie = conteos
+            .filter(d => d.valor !== null && d.valor !== undefined)
+            .map(d => ({ year: d.valor, count: d.conteo }));
+          console.log('Serie normalizada:', serie);
+          setSeriesAnio(serie);
+        } catch (e) {
+          console.error('Error cargando conteo por año:', e);
+          setSeriesAnio([]);
+        }
+      }
+    } catch (e) {
+      console.error('Error cargando datos del dashboard:', e);
     } finally {
       setLoading(false);
     }
   };
 
-  const calcularTotalRegistros = () => {
-    return Object.values(estadisticas).reduce((total, stat) => total + (stat.total_documentos || 0), 0);
-  };
-
-  const calcularTotalCampos = () => {
-    return Object.values(estadisticas).reduce((total, stat) => total + (stat.campos_disponibles?.length || 0), 0);
-  };
+  const totalJuegos = Object.values(estadisticas).reduce((t, s) => t + (s.total_documentos || 0), 0);
 
   if (loading) {
     return (
       <div className="dashboard-loading">
-        <div className="loading-spinner"></div>
+        <div className="loading-spinner" />
         <p>Cargando estadísticas del sistema...</p>
       </div>
     );
   }
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-header">
-        <h2>Panel de Control</h2>
-        <p>Resumen general del sistema de reportes</p>
-      </div>
+    <div className="dashboard-v2">
+      <div className="title-bar">📊 DASHBOARD DE ANÁLISIS DE VIDEOJUEGOS</div>
 
-      <div className="dashboard-resumen">
-        <div className="tarjeta-resumen">
-          <div className="tarjeta-icono colecciones">📊</div>
-          <div className="tarjeta-contenido">
-            <h3>{colecciones.length}</h3>
-            <p>Colecciones</p>
-          </div>
-        </div>
+      {/* Métricas principales */}
+      <section className="stats-grid">
+        <article className="stat-card">
+          <span className="stat-title">Total Juegos</span>
+          <span className="stat-value">{totalJuegos.toLocaleString()}</span>
+        </article>
+        <article className="stat-card">
+          <span className="stat-title">Rating Promedio</span>
+          <span className="stat-value">—</span>
+        </article>
+        <article className="stat-card">
+          <span className="stat-title">Jugadores Activos</span>
+          <span className="stat-value">—</span>
+        </article>
+        <article className="stat-card">
+          <span className="stat-title">Reviews Totales</span>
+          <span className="stat-value">—</span>
+        </article>
+        <article className="stat-card">
+          <span className="stat-title">Juegos 2024</span>
+          <span className="stat-value">—</span>
+        </article>
+      </section>
 
-        <div className="tarjeta-resumen">
-          <div className="tarjeta-icono registros">📋</div>
-          <div className="tarjeta-contenido">
-            <h3>{calcularTotalRegistros().toLocaleString()}</h3>
-            <p>Total Registros</p>
+      {/* Fila 1 de gráficos */}
+      <section className="section-grid-2">
+        <article className="panel">
+          <header className="panel-header">📈 Juegos Lanzados por Año</header>
+          <div className="panel-body">
+            {seriesAnio.length > 0 ? (
+              <LineChart data={seriesAnio} />
+            ) : (
+              <div className="placeholder">Sin datos de año</div>
+            )}
           </div>
-        </div>
+        </article>
+        <article className="panel">
+          <header className="panel-header">📊 Top Géneros</header>
+          <div className="panel-body placeholder">[Gráfico de Barras]</div>
+        </article>
+      </section>
 
-        <div className="tarjeta-resumen">
-          <div className="tarjeta-icono campos">🏷️</div>
-          <div className="tarjeta-contenido">
-            <h3>{calcularTotalCampos()}</h3>
-            <p>Campos Únicos</p>
-          </div>
-        </div>
+      {/* Fila 2 de gráficos */}
+      <section className="section-grid-2">
+        <article className="panel">
+          <header className="panel-header">🍩 Distribución por Rating</header>
+          <div className="panel-body placeholder">[Gráfico de Dona]</div>
+        </article>
+        <article className="panel">
+          <header className="panel-header">📊 Top Desarrolla.</header>
+          <div className="panel-body placeholder">[Gráfico Horizontal]</div>
+        </article>
+      </section>
 
-        <div className="tarjeta-resumen">
-          <div className="tarjeta-icono sistema">⚡</div>
-          <div className="tarjeta-contenido">
-            <h3>Activo</h3>
-            <p>Estado Sistema</p>
-          </div>
-        </div>
-      </div>
+      {/* Tabla principal */}
+      <section className="section-grid-1">
+        <article className="panel">
+          <header className="panel-header">🏆 Top 20 Juegos Más Populares</header>
+          <div className="panel-body placeholder">[Tabla Interactiva con Sorting]</div>
+        </article>
+      </section>
 
-      <div className="dashboard-contenido">
-        <div className="seccion-colecciones">
-          <h3>Colecciones Disponibles</h3>
-          <div className="colecciones-grid">
-            {colecciones.map((coleccion) => {
-              const stats = estadisticas[coleccion] || {};
-              return (
-                <div key={coleccion} className="tarjeta-coleccion">
-                  <div className="coleccion-header">
-                    <h4>{coleccion}</h4>
-                    <span className="coleccion-badge">
-                      {stats.total_documentos || 0} registros
-                    </span>
-                  </div>
-                  <div className="coleccion-detalles">
-                    <p>
-                      <strong>Campos disponibles:</strong> {stats.campos_disponibles?.length || 0}
-                    </p>
-                    <div className="campos-preview">
-                      {stats.campos_disponibles?.slice(0, 3).map((campo) => (
-                        <span key={campo} className="campo-tag">{campo}</span>
-                      ))}
-                      {stats.campos_disponibles?.length > 3 && (
-                        <span className="campo-tag mas">+{stats.campos_disponibles.length - 3} más</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="seccion-accesos-rapidos">
-          <h3>Accesos Rápidos</h3>
-          <div className="accesos-grid">
-            <button 
-              className="acceso-rapido reportes"
-              onClick={() => onCambiarVista && onCambiarVista('reportes')}
-            >
-              <span className="acceso-icono">📋</span>
-              <div>
-                <h4>Generar Reporte</h4>
-                <p>Crear un nuevo reporte personalizado</p>
-              </div>
-            </button>
-            
-            <button className="acceso-rapido estadisticas">
-              <span className="acceso-icono">📊</span>
-              <div>
-                <h4>Ver Estadísticas</h4>
-                <p>Análisis detallado de las colecciones</p>
-              </div>
-            </button>
-            
-            <button className="acceso-rapido exportar">
-              <span className="acceso-icono">💾</span>
-              <div>
-                <h4>Exportar Datos</h4>
-                <p>Descargar información del sistema</p>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
+      {/* Mini-cards */}
+      <section className="section-grid-3">
+        <article className="panel">
+          <header className="panel-header">🔹 Hidden Gems</header>
+          <div className="panel-body placeholder">[Mini Cards]</div>
+        </article>
+        <article className="panel">
+          <header className="panel-header">🔥 Trending</header>
+          <div className="panel-body placeholder">[Mini Cards]</div>
+        </article>
+        <article className="panel">
+          <header className="panel-header">⭐ Top Rated</header>
+          <div className="panel-body placeholder">[Mini Cards]</div>
+        </article>
+      </section>
 
       <div className="dashboard-footer">
         <p>Última actualización: {new Date().toLocaleString()}</p>
-        <button onClick={cargarDatosDashboard} className="btn-actualizar">
-          🔄 Actualizar
-        </button>
+        <button onClick={cargarDatosDashboard} className="btn-actualizar">🔄 Actualizar</button>
       </div>
     </div>
   );

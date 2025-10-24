@@ -152,3 +152,89 @@ class ReporteService:
                 "valores": [],
                 "error": str(e)
             }
+
+    async def obtener_conteo_por_campo(self, coleccion: str, campo: str, limite: int = 1000):
+        """Devuelve el conteo de documentos agrupados por un campo dado.
+
+        Respuesta: { success, conteos: [{valor, conteo}], total_valores }
+        """
+        try:
+            collection = self.db[coleccion]
+
+            pipeline = [
+                {"$group": {"_id": f"${campo}", "conteo": {"$sum": 1}}},
+                {"$match": {"_id": {"$ne": None}}},
+                {"$sort": {"_id": 1}},
+                {"$limit": limite}
+            ]
+
+            cursor = collection.aggregate(pipeline)
+            resultados = await cursor.to_list(length=limite)
+
+            conteos = [{"valor": doc.get("_id"), "conteo": doc.get("conteo", 0)} for doc in resultados]
+
+            return {
+                "success": True,
+                "conteos": conteos,
+                "total_valores": len(conteos)
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "conteos": [],
+                "error": str(e)
+            }
+
+    async def obtener_conteo_por_anio(self, coleccion: str, campo_fecha: str, formato: str = "%b %d, %Y", limite: int = 200):
+        """Devuelve conteo de documentos agrupados por año, extrayendo de Release_Date."""
+        try:
+            collection = self.db[coleccion]
+            
+            # Primero ver una muestra de los datos
+            muestra = await collection.find({}).limit(5).to_list(length=5)
+            print(f"Muestra de datos de {coleccion}:")
+            for doc in muestra:
+                print(f"  {campo_fecha}: {doc.get(campo_fecha)}")
+            
+            pipeline = [
+                {
+                    "$addFields": {
+                        "__yearStr": {
+                            "$regexFind": {
+                                "input": {"$toString": {"$ifNull": [f"${campo_fecha}", ""]}},
+                                "regex": r"(\d{4})"
+                            }
+                        }
+                    }
+                },
+                {
+                    "$addFields": {
+                        "year": {
+                            "$cond": {
+                                "if": {"$ne": ["$__yearStr", None]},
+                                "then": {"$toInt": "$__yearStr.match"},
+                                "else": None
+                            }
+                        }
+                    }
+                },
+                {"$match": {"year": {"$ne": None, "$gte": 1990, "$lte": 2030}}},
+                {"$group": {"_id": "$year", "conteo": {"$sum": 1}}},
+                {"$sort": {"_id": 1}},
+                {"$limit": limite}
+            ]
+
+            print(f"Pipeline para {coleccion}.{campo_fecha}:")
+            print(pipeline)
+            
+            cursor = collection.aggregate(pipeline)
+            resultados = await cursor.to_list(length=limite)
+            print(f"Resultados de agregación: {resultados}")
+            
+            conteos = [{"valor": doc.get("_id"), "conteo": doc.get("conteo", 0)} for doc in resultados]
+            print(f"Conteos finales: {conteos}")
+            
+            return {"success": True, "conteos": conteos, "total_valores": len(conteos)}
+        except Exception as e:
+            print(f"Error en obtener_conteo_por_anio: {str(e)}")
+            return {"success": False, "conteos": [], "error": str(e)}

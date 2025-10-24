@@ -22,6 +22,12 @@ export const reportesAPI = {
   
   obtenerValoresUnicos: (coleccion, campo) =>
     api.get(`/reportes/valores-unicos/${coleccion}/${campo}`),
+
+  conteoPorCampo: (coleccion, campo) =>
+    api.get(`/reportes/conteo-por-campo/${coleccion}/${campo}`),
+
+  conteoPorAnio: (coleccion, campo, formato = "%b %d, %Y") =>
+    api.get(`/reportes/conteo-por-anio/${coleccion}/${campo}`, { params: { formato } }),
 };
 
 export default api;

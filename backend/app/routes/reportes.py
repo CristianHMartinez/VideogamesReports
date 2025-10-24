@@ -65,3 +65,32 @@ async def obtener_valores_unicos(
         return await service.obtener_valores_unicos(coleccion, campo)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/conteo-por-campo/{coleccion}/{campo}")
+async def conteo_por_campo(
+    coleccion: str,
+    campo: str,
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Conteo de documentos agrupados por un campo (útil para series por año)."""
+    try:
+        service = ReporteService(db)
+        return await service.obtener_conteo_por_campo(coleccion, campo)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/conteo-por-anio/{coleccion}/{campo}")
+async def conteo_por_anio(
+    coleccion: str,
+    campo: str,
+    formato: str = "%b %d, %Y",
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Conteo agrupado por año extrayéndolo desde un campo string de fecha.
+    Formato por defecto: "Feb 25, 2022" => "%b %d, %Y".
+    """
+    try:
+        service = ReporteService(db)
+        return await service.obtener_conteo_por_anio(coleccion, campo, formato)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
