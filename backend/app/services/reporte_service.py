@@ -450,3 +450,119 @@ class ReporteService:
                 "rating_promedio": 0,
                 "error": str(e)
             }
+
+    async def obtener_distribucion_rating(self, coleccion: str, campo_rating: str = "Rating"):
+        """Devuelve la distribución de ratings agrupados por rangos.
+        
+        Agrupa ratings en rangos: 0-1, 1-2, 2-3, 3-4, 4-5, etc.
+        """
+        try:
+            collection = self.db[coleccion]
+            
+            # Pipeline para agrupar ratings por rangos
+            pipeline = [
+                {
+                    "$addFields": {
+                        "__ratingNum": {
+                            "$cond": {
+                                "if": {"$eq": [{"$type": f"${campo_rating}"}, "string"]},
+                                "then": {
+                                    "$toDouble": {
+                                        "$cond": {
+                                            "if": {"$regexMatch": {"input": f"${campo_rating}", "regex": "^[0-9]+(\\.[0-9]+)?$"}},
+                                            "then": f"${campo_rating}",
+                                            "else": None
+                                        }
+                                    }
+                                },
+                                "else": {
+                                    "$cond": {
+                                        "if": {"$or": [
+                                            {"$eq": [{"$type": f"${campo_rating}"}, "double"]},
+                                            {"$eq": [{"$type": f"${campo_rating}"}, "int"]},
+                                            {"$eq": [{"$type": f"${campo_rating}"}, "long"]},
+                                            {"$eq": [{"$type": f"${campo_rating}"}, "decimal"]}
+                                        ]},
+                                        "then": {"$toDouble": f"${campo_rating}"},
+                                        "else": None
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "__ratingNum": {"$ne": None, "$gte": 0, "$lte": 10}
+                    }
+                },
+                {
+                    "$addFields": {
+                        "__ratingRange": {
+                            "$switch": {
+                                "branches": [
+                                    {"case": {"$and": [{"$gte": ["$__ratingNum", 0]}, {"$lt": ["$__ratingNum", 2]}]}, "then": "0-2 ⭐"},
+                                    {"case": {"$and": [{"$gte": ["$__ratingNum", 2]}, {"$lt": ["$__ratingNum", 3]}]}, "then": "2-3 ⭐⭐"},
+                                    {"case": {"$and": [{"$gte": ["$__ratingNum", 3]}, {"$lt": ["$__ratingNum", 4]}]}, "then": "3-4 ⭐⭐⭐"},
+                                    {"case": {"$and": [{"$gte": ["$__ratingNum", 4]}, {"$lt": ["$__ratingNum", 5]}]}, "then": "4-5 ⭐⭐⭐⭐"},
+                                    {"case": {"$gte": ["$__ratingNum", 5]}, "then": "5+ ⭐⭐⭐⭐⭐"}
+                                ],
+                                "default": "Sin rating"
+                            }
+                        }
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$__ratingRange",
+                        "conteo": {"$sum": 1},
+                        "promedio_rango": {"$avg": "$__ratingNum"}
+                    }
+                },
+                {
+                    "$sort": {"_id": 1}
+                }
+            ]
+
+            print(f"Pipeline distribución rating para {coleccion}:")
+            print(pipeline)
+
+            cursor = collection.aggregate(pipeline)
+            resultados = await cursor.to_list(length=10)
+            print(f"Resultados distribución rating: {resultados}")
+            
+            # Definir colores para cada rango
+            color_map = {
+                "0-2 ⭐": "#ef4444",        # Rojo
+                "2-3 ⭐⭐": "#f97316",      # Naranja
+                "3-4 ⭐⭐⭐": "#eab308",    # Amarillo
+                "4-5 ⭐⭐⭐⭐": "#22c55e",  # Verde
+                "5+ ⭐⭐⭐⭐⭐": "#3b82f6", # Azul
+            }
+            
+            distribucion = [
+                {
+                    "rango": doc.get("_id", ""),
+                    "conteo": doc.get("conteo", 0),
+                    "promedio_rango": round(doc.get("promedio_rango", 0), 2),
+                    "color": color_map.get(doc.get("_id", ""), "#6b7280")
+                }
+                for doc in resultados
+                if doc.get("_id")
+            ]
+            
+            total_ratings = sum(d["conteo"] for d in distribucion)
+            
+            return {
+                "success": True,
+                "distribucion": distribucion,
+                "total_ratings": total_ratings
+            }
+            
+        except Exception as e:
+            print(f"Error en obtener_distribucion_rating: {str(e)}")
+            return {
+                "success": False,
+                "distribucion": [],
+                "error": str(e)
+            }

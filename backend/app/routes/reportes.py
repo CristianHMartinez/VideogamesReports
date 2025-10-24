@@ -120,3 +120,16 @@ async def rating_promedio(
         return await service.obtener_rating_promedio(coleccion, campo)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/distribucion-rating/{coleccion}")
+async def distribucion_rating(
+    coleccion: str,
+    campo: str = "Rating",
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Obtiene la distribución de ratings por rangos."""
+    try:
+        service = ReporteService(db)
+        return await service.obtener_distribucion_rating(coleccion, campo)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

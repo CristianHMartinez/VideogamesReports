@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { reportesAPI } from '../services/api';
 import LineChart from './charts/LineChart';
 import BarChart from './charts/BarChart';
+import DonutChart from './charts/DonutChart';
 import './Dashboard.css';
 
 // Nuevo layout del Dashboard con secciones y placeholders
@@ -12,6 +13,7 @@ function Dashboard({ onCambiarVista }) {
   const [seriesAnio, setSeriesAnio] = useState([]);
   const [seriesGeneros, setSeriesGeneros] = useState([]);
   const [ratingPromedio, setRatingPromedio] = useState(0);
+  const [distribucionRating, setDistribucionRating] = useState([]);
 
   useEffect(() => {
     cargarDatosDashboard();
@@ -90,6 +92,25 @@ function Dashboard({ onCambiarVista }) {
           console.error('Error cargando rating promedio:', e);
           setRatingPromedio(0);
         }
+
+        // Cargar distribución de rating
+        try {
+          const rDistribucion = await reportesAPI.distribucionRating(preferida, 'Rating');
+          console.log('Respuesta distribución rating:', rDistribucion);
+          const distribucion = rDistribucion.data?.distribucion || [];
+          
+          // Normalizar a {rango, count, color}
+          const serieDistribucion = distribucion.map(d => ({
+            rango: d.rango,
+            count: d.conteo,
+            color: d.color
+          }));
+          console.log('Serie distribución:', serieDistribucion);
+          setDistribucionRating(serieDistribucion);
+        } catch (e) {
+          console.error('Error cargando distribución rating:', e);
+          setDistribucionRating([]);
+        }
       }
     } catch (e) {
       console.error('Error cargando datos del dashboard:', e);
@@ -165,7 +186,13 @@ function Dashboard({ onCambiarVista }) {
       <section className="section-grid-2">
         <article className="panel">
           <header className="panel-header">🍩 Distribución por Rating</header>
-          <div className="panel-body placeholder">[Gráfico de Dona]</div>
+          <div className="panel-body">
+            {distribucionRating.length > 0 ? (
+              <DonutChart data={distribucionRating} />
+            ) : (
+              <div className="placeholder">Sin datos de rating</div>
+            )}
+          </div>
         </article>
         <article className="panel">
           <header className="panel-header">📊 Top Desarrolla.</header>
