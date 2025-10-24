@@ -26,8 +26,11 @@
 
 .dashboard-container {
   width: 100%;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  flex: 1;
+}
+
+.reportes-container {
+  width: 100%;
   flex: 1;
 }
 
@@ -45,9 +48,9 @@
     gap: 1rem;
   }
   
-  .dashboard-container {
-    margin: 1rem auto;
-    padding: 0 0.5rem;
+  .dashboard-container,
+  .reportes-container {
+    padding: 0;
   }
 }
 

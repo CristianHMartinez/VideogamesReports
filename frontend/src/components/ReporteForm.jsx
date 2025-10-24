@@ -58,58 +58,110 @@ function ReporteForm({ onReporteGenerado }) {
   };
 
   return (
-    <form onSubmit={handleGenerarReporte} className="reporte-form">
-      <h2>Generar Reporte</h2>
-      
-      <div className="form-group">
-        <label>Colección:</label>
-        <select
-          value={coleccionSeleccionada}
-          onChange={(e) => {
-            setColeccionSeleccionada(e.target.value);
-            cargarEstadisticas(e.target.value);
-            // Limpiar filtros cuando cambia la colección
-            setFiltrosAvanzados({});
-          }}
-          required
-        >
-          <option value="">Seleccione una colección</option>
-          {colecciones.map((col) => (
-            <option key={col} value={col}>
-              {col}
-            </option>
-          ))}
-        </select>
+    <div className="reporte-form-modern">
+      <div className="form-section">
+        <h3 className="section-title">🗂️ Selección de Datos</h3>
+        
+        <div className="form-row">
+          <div className="form-group">
+            <label>Colección de Datos:</label>
+            <select
+              value={coleccionSeleccionada}
+              onChange={(e) => {
+                setColeccionSeleccionada(e.target.value);
+                cargarEstadisticas(e.target.value);
+                setFiltrosAvanzados({});
+              }}
+              required
+              className="form-select"
+            >
+              <option value="">🔍 Seleccione una colección...</option>
+              {colecciones.map((col) => (
+                <option key={col} value={col}>
+                  📋 {col}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Límite de Registros:</label>
+            <select
+              value={limite}
+              onChange={(e) => setLimite(e.target.value)}
+              className="form-select"
+            >
+              <option value={100}>📄 100 registros</option>
+              <option value={500}>📄 500 registros</option>
+              <option value={1000}>📄 1,000 registros</option>
+              <option value={5000}>📄 5,000 registros</option>
+              <option value={10000}>📄 10,000 registros</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      <FiltrosAvanzados 
-        coleccion={coleccionSeleccionada}
-        onFiltrosChange={manejarCambioFiltros}
-        filtrosIniciales={filtrosAvanzados}
-      />
-
-      <div className="form-group">
-        <label>Límite de registros:</label>
-        <input
-          type="number"
-          value={limite}
-          onChange={(e) => setLimite(e.target.value)}
-          min="1"
-          max="10000"
-        />
-      </div>
-
-      <button type="submit" disabled={loading}>
-        {loading ? 'Generando...' : 'Generar Reporte'}
-      </button>
-
-      {campos.length > 0 && (
-        <div className="campos-info">
-          <h4>Campos disponibles:</h4>
-          <p>{campos.join(', ')}</p>
+      {coleccionSeleccionada && (
+        <div className="form-section">
+          <h3 className="section-title">🔧 Filtros Avanzados</h3>
+          <div className="filtros-container">
+            <FiltrosAvanzados 
+              coleccion={coleccionSeleccionada}
+              onFiltrosChange={manejarCambioFiltros}
+              filtrosIniciales={filtrosAvanzados}
+            />
+          </div>
         </div>
       )}
-    </form>
+
+      {campos.length > 0 && (
+        <div className="form-section">
+          <h3 className="section-title">📊 Información de la Colección</h3>
+          <div className="campos-info-modern">
+            <div className="info-header">
+              <span className="info-icon">🏷️</span>
+              <span className="info-title">Campos Disponibles ({campos.length})</span>
+            </div>
+            <div className="campos-tags">
+              {campos.map((campo, index) => (
+                <span key={index} className="campo-tag">
+                  {campo}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="form-actions">
+        <button 
+          type="submit" 
+          disabled={loading || !coleccionSeleccionada}
+          className="btn-generar"
+          onClick={handleGenerarReporte}
+        >
+          {loading ? (
+            <>
+              <span className="btn-spinner"></span>
+              Generando Reporte...
+            </>
+          ) : (
+            <>
+              <span className="btn-icon">🚀</span>
+              Generar Reporte
+            </>
+          )}
+        </button>
+        
+        {coleccionSeleccionada && (
+          <div className="form-info">
+            <span className="info-text">
+              ✨ Se generará un reporte de máximo {parseInt(limite).toLocaleString()} registros de la colección "{coleccionSeleccionada}"
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
