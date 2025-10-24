@@ -4,6 +4,7 @@ import LineChart from './charts/LineChart';
 import BarChart from './charts/BarChart';
 import DonutChart from './charts/DonutChart';
 import HorizontalBarChart from './charts/HorizontalBarChart';
+import TopJuegosTabla from './TopJuegosTabla';
 import './Dashboard.css';
 
 // Nuevo layout del Dashboard con secciones y placeholders
@@ -16,6 +17,7 @@ function Dashboard({ onCambiarVista }) {
   const [ratingPromedio, setRatingPromedio] = useState(0);
   const [distribucionRating, setDistribucionRating] = useState([]);
   const [seriesDesarrolladores, setSeriesDesarrolladores] = useState([]);
+  const [topJuegosPopulares, setTopJuegosPopulares] = useState([]);
 
   useEffect(() => {
     cargarDatosDashboard();
@@ -131,6 +133,18 @@ function Dashboard({ onCambiarVista }) {
           console.error('Error cargando desarrolladores:', e);
           setSeriesDesarrolladores([]);
         }
+
+        // Cargar top juegos populares
+        try {
+          const rTopJuegos = await reportesAPI.topJuegosPopulares(preferida, 20);
+          console.log('Respuesta top juegos:', rTopJuegos);
+          const juegosData = rTopJuegos.data?.juegos || [];
+          console.log('Top juegos populares:', juegosData);
+          setTopJuegosPopulares(juegosData);
+        } catch (e) {
+          console.error('Error cargando top juegos populares:', e);
+          setTopJuegosPopulares([]);
+        }
       }
     } catch (e) {
       console.error('Error cargando datos del dashboard:', e);
@@ -230,7 +244,13 @@ function Dashboard({ onCambiarVista }) {
       <section className="section-grid-1">
         <article className="panel">
           <header className="panel-header">🏆 Top 20 Juegos Más Populares</header>
-          <div className="panel-body placeholder">[Tabla Interactiva con Sorting]</div>
+          <div className="panel-body">
+            {topJuegosPopulares.length > 0 ? (
+              <TopJuegosTabla data={topJuegosPopulares} />
+            ) : (
+              <div className="placeholder">Cargando top juegos populares...</div>
+            )}
+          </div>
         </article>
       </section>
 

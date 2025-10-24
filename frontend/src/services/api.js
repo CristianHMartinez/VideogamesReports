@@ -40,6 +40,9 @@ export const reportesAPI = {
 
   conteoDesarrolladores: (coleccion, campo = "Developers") =>
     api.get(`/reportes/conteo-desarrolladores/${coleccion}`, { params: { campo } }),
+
+  topJuegosPopulares: (coleccion, limite = 20) =>
+    api.get(`/reportes/top-juegos-populares/${coleccion}`, { params: { limite } }),
 };
 
 export default api;

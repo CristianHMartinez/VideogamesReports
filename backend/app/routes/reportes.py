@@ -146,3 +146,16 @@ async def conteo_desarrolladores(
         return await service.obtener_conteo_desarrolladores(coleccion, campo)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/top-juegos-populares/{coleccion}")
+async def top_juegos_populares(
+    coleccion: str,
+    limite: int = 20,
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Obtiene el top de juegos más populares basado en rating, reviews y completitud de datos."""
+    try:
+        service = ReporteService(db)
+        return await service.obtener_top_juegos_populares(coleccion, limite)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

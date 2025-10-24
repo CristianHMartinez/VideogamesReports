@@ -681,3 +681,125 @@ class ReporteService:
                 "conteos": [], 
                 "error": str(e)
             }
+
+    async def obtener_top_juegos_populares(self, nombre_coleccion: str, limite: int = 20) -> Dict[str, Any]:
+        """
+        Obtiene el top de juegos más populares basado en diferentes métricas como rating, 
+        número de reviews, etc. Prioriza juegos con más datos disponibles.
+        """
+        try:
+            coleccion = self.db[nombre_coleccion]
+            
+            # Pipeline que calcula una puntuación de popularidad combinando varios factores
+            pipeline = [
+                {
+                    "$addFields": {
+                        # Normalizar rating (0-10 scale)
+                        "rating_normalizado": {
+                            "$cond": {
+                                "if": {"$and": [
+                                    {"$ne": ["$Rating", None]}, 
+                                    {"$ne": ["$Rating", ""]},
+                                    {"$ne": ["$Rating", "N/A"]},
+                                    {"$ne": ["$Rating", "TBD"]},
+                                    {"$not": {"$eq": [{"$type": "$Rating"}, "string"]}}
+                                ]},
+                                "then": {
+                                    "$cond": {
+                                        "if": {"$isNumber": "$Rating"},
+                                        "then": "$Rating",
+                                        "else": {
+                                            "$convert": {
+                                                "input": "$Rating",
+                                                "to": "double",
+                                                "onError": 0
+                                            }
+                                        }
+                                    }
+                                },
+                                "else": 0
+                            }
+                        },
+                        # Contar reviews si existe el campo
+                        "reviews_count": {
+                            "$cond": {
+                                "if": {"$and": [
+                                    {"$ne": ["$Reviews", None]}, 
+                                    {"$ne": ["$Reviews", ""]}
+                                ]},
+                                "then": {
+                                    "$cond": {
+                                        "if": {"$isNumber": "$Reviews"},
+                                        "then": "$Reviews",
+                                        "else": 1
+                                    }
+                                },
+                                "else": 0
+                            }
+                        },
+                        # Factor de completitud de datos (más campos = más popular)
+                        "completitud": {
+                            "$add": [
+                                {"$cond": [{"$ne": ["$Title", None]}, 1, 0]},
+                                {"$cond": [{"$ne": ["$Rating", None]}, 1, 0]},
+                                {"$cond": [{"$ne": ["$Genres", None]}, 1, 0]},
+                                {"$cond": [{"$ne": ["$Developers", None]}, 1, 0]},
+                                {"$cond": [{"$ne": ["$Release_Date", None]}, 1, 0]}
+                            ]
+                        }
+                    }
+                },
+                {
+                    "$addFields": {
+                        # Calcular puntuación de popularidad
+                        "popularidad_score": {
+                            "$add": [
+                                {"$multiply": ["$rating_normalizado", 2]},  # Rating tiene peso 2
+                                {"$multiply": [{"$min": [{"$divide": ["$reviews_count", 100]}, 5]}, 1]},  # Reviews (max 5 puntos)
+                                {"$multiply": ["$completitud", 0.5]}  # Completitud de datos
+                            ]
+                        }
+                    }
+                },
+                {
+                    "$match": {
+                        "Title": {"$ne": None, "$ne": ""},
+                        "popularidad_score": {"$gt": 0}
+                    }
+                },
+                {"$sort": {"popularidad_score": -1, "rating_normalizado": -1}},
+                {"$limit": limite},
+                {
+                    "$project": {
+                        "_id": 0,
+                        "nombre": "$Title",
+                        "rating": "$rating_normalizado",
+                        "generos": "$Genres",
+                        "desarrolladores": "$Developers",
+                        "fecha_lanzamiento": "$Release_Date",
+                        "reviews": "$reviews_count",
+                        "popularidad_score": {"$round": ["$popularidad_score", 2]}
+                    }
+                }
+            ]
+            
+            print(f"Pipeline juegos populares para {nombre_coleccion}:")
+            print(pipeline)
+
+            cursor = coleccion.aggregate(pipeline)
+            resultados = await cursor.to_list(length=limite)
+            print(f"Resultados juegos populares: {len(resultados)} juegos")
+            
+            return {
+                "success": True, 
+                "juegos": resultados, 
+                "total_juegos": len(resultados)
+            }
+            
+        except Exception as e:
+            print(f"Error en obtener_top_juegos_populares: {str(e)}")
+            return {
+                "success": False, 
+                "juegos": [], 
+                "error": str(e)
+            }
