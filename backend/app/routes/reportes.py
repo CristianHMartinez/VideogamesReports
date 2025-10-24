@@ -159,3 +159,15 @@ async def top_juegos_populares(
         return await service.obtener_top_juegos_populares(coleccion, limite)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/metricas-dashboard/{coleccion}")
+async def metricas_dashboard(
+    coleccion: str,
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Obtiene métricas adicionales para el dashboard: jugadores activos, reviews totales, juegos 2024."""
+    try:
+        service = ReporteService(db)
+        return await service.obtener_metricas_dashboard(coleccion)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

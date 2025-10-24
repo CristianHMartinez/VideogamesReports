@@ -803,3 +803,123 @@ class ReporteService:
                 "juegos": [], 
                 "error": str(e)
             }
+
+    async def obtener_metricas_dashboard(self, nombre_coleccion: str) -> Dict[str, Any]:
+        """
+        Obtiene métricas adicionales para el dashboard: jugadores activos, reviews totales, juegos 2024
+        """
+        try:
+            coleccion = self.db[nombre_coleccion]
+            
+            # Pipeline para calcular múltiples métricas en una sola consulta
+            pipeline = [
+                {
+                    "$addFields": {
+                        # Normalizar jugadores activos
+                        "playing_normalizado": {
+                            "$cond": {
+                                "if": {"$and": [
+                                    {"$ne": ["$Playing", None]}, 
+                                    {"$ne": ["$Playing", ""]},
+                                    {"$isNumber": "$Playing"}
+                                ]},
+                                "then": "$Playing",
+                                "else": 0
+                            }
+                        },
+                        # Normalizar reviews
+                        "reviews_normalizado": {
+                            "$cond": {
+                                "if": {"$and": [
+                                    {"$ne": ["$Reviews", None]}, 
+                                    {"$ne": ["$Reviews", ""]},
+                                    {"$isNumber": "$Reviews"}
+                                ]},
+                                "then": "$Reviews",
+                                "else": 0
+                            }
+                        },
+                        # Extraer año de Release_Date
+                        "anio_lanzamiento": {
+                            "$cond": {
+                                "if": {"$ne": ["$Release_Date", None]},
+                                "then": {
+                                    "$let": {
+                                        "vars": {
+                                            "match": {
+                                                "$regexFind": {
+                                                    "input": {"$toString": "$Release_Date"},
+                                                    "regex": "\\d{4}"
+                                                }
+                                            }
+                                        },
+                                        "in": {
+                                            "$cond": {
+                                                "if": {"$ne": ["$$match", None]},
+                                                "then": {
+                                                    "$toInt": "$$match.match"
+                                                },
+                                                "else": 0
+                                            }
+                                        }
+                                    }
+                                },
+                                "else": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": None,
+                        "total_jugadores_activos": {"$sum": "$playing_normalizado"},
+                        "total_reviews": {"$sum": "$reviews_normalizado"},
+                        "juegos_2024": {
+                            "$sum": {
+                                "$cond": [
+                                    {"$eq": ["$anio_lanzamiento", 2024]}, 
+                                    1, 
+                                    0
+                                ]
+                            }
+                        },
+                        "total_juegos": {"$sum": 1}
+                    }
+                }
+            ]
+            
+            print(f"Pipeline métricas dashboard para {nombre_coleccion}:")
+            print(pipeline)
+
+            cursor = coleccion.aggregate(pipeline)
+            resultados = await cursor.to_list(length=1)
+            print(f"Resultados métricas dashboard: {resultados}")
+            
+            if resultados:
+                metricas = resultados[0]
+                return {
+                    "success": True,
+                    "jugadores_activos": metricas.get("total_jugadores_activos", 0),
+                    "reviews_totales": metricas.get("total_reviews", 0),
+                    "juegos_2024": metricas.get("juegos_2024", 0),
+                    "total_juegos": metricas.get("total_juegos", 0)
+                }
+            else:
+                return {
+                    "success": True,
+                    "jugadores_activos": 0,
+                    "reviews_totales": 0,
+                    "juegos_2024": 0,
+                    "total_juegos": 0
+                }
+            
+        except Exception as e:
+            print(f"Error en obtener_metricas_dashboard: {str(e)}")
+            return {
+                "success": False,
+                "jugadores_activos": 0,
+                "reviews_totales": 0,
+                "juegos_2024": 0,
+                "total_juegos": 0,
+                "error": str(e)
+            }

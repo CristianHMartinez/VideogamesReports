@@ -43,6 +43,9 @@ export const reportesAPI = {
 
   topJuegosPopulares: (coleccion, limite = 20) =>
     api.get(`/reportes/top-juegos-populares/${coleccion}`, { params: { limite } }),
+
+  metricasDashboard: (coleccion) =>
+    api.get(`/reportes/metricas-dashboard/${coleccion}`),
 };
 
 export default api;

@@ -18,6 +18,11 @@ function Dashboard({ onCambiarVista }) {
   const [distribucionRating, setDistribucionRating] = useState([]);
   const [seriesDesarrolladores, setSeriesDesarrolladores] = useState([]);
   const [topJuegosPopulares, setTopJuegosPopulares] = useState([]);
+  const [metricasAdicionales, setMetricasAdicionales] = useState({
+    jugadores_activos: 0,
+    reviews_totales: 0,
+    juegos_2024: 0
+  });
 
   useEffect(() => {
     cargarDatosDashboard();
@@ -145,6 +150,25 @@ function Dashboard({ onCambiarVista }) {
           console.error('Error cargando top juegos populares:', e);
           setTopJuegosPopulares([]);
         }
+
+        // Cargar métricas adicionales
+        try {
+          const rMetricas = await reportesAPI.metricasDashboard(preferida);
+          console.log('Respuesta métricas adicionales:', rMetricas);
+          const metricas = rMetricas.data || {};
+          setMetricasAdicionales({
+            jugadores_activos: metricas.jugadores_activos || 0,
+            reviews_totales: metricas.reviews_totales || 0,
+            juegos_2024: metricas.juegos_2024 || 0
+          });
+        } catch (e) {
+          console.error('Error cargando métricas adicionales:', e);
+          setMetricasAdicionales({
+            jugadores_activos: 0,
+            reviews_totales: 0,
+            juegos_2024: 0
+          });
+        }
       }
     } catch (e) {
       console.error('Error cargando datos del dashboard:', e);
@@ -180,15 +204,15 @@ function Dashboard({ onCambiarVista }) {
         </article>
         <article className="stat-card">
           <span className="stat-title">Jugadores Activos</span>
-          <span className="stat-value">—</span>
+          <span className="stat-value">{metricasAdicionales.jugadores_activos.toLocaleString()}</span>
         </article>
         <article className="stat-card">
           <span className="stat-title">Reviews Totales</span>
-          <span className="stat-value">—</span>
+          <span className="stat-value">{metricasAdicionales.reviews_totales.toLocaleString()}</span>
         </article>
         <article className="stat-card">
           <span className="stat-title">Juegos 2024</span>
-          <span className="stat-value">—</span>
+          <span className="stat-value">{metricasAdicionales.juegos_2024.toLocaleString()}</span>
         </article>
       </section>
 
