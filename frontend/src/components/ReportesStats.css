@@ -13,35 +13,36 @@
 }
 
 .stat-card {
-  background: white;
-  border-radius: 12px;
+  background: var(--card-background);
+  border-radius: 8px;
   padding: 20px;
   display: flex;
   align-items: center;
   gap: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-light);
   transition: all 0.3s ease;
   border-left: 4px solid transparent;
+  border: 1px solid var(--border-color);
 }
 
 .stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
 }
 
 .stat-card.primary {
-  border-left-color: #667eea;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-left-color: var(--primary-color);
+  background: linear-gradient(135deg, rgba(22, 57, 79, 0.1) 0%, rgba(56, 112, 126, 0.1) 100%);
 }
 
 .stat-card.secondary {
-  border-left-color: #28a745;
-  background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%);
+  border-left-color: var(--secondary-color);
+  background: linear-gradient(135deg, rgba(56, 112, 126, 0.1) 0%, rgba(22, 57, 79, 0.1) 100%);
 }
 
 .stat-card.collection {
-  border-left-color: #ffc107;
-  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(253, 126, 20, 0.1) 100%);
+  border-left-color: var(--accent-color);
+  background: linear-gradient(135deg, rgba(189, 195, 199, 0.1) 0%, rgba(127, 140, 141, 0.1) 100%);
 }
 
 .stat-icon {
@@ -58,7 +59,7 @@
 
 .stat-label {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 500;
   margin-bottom: 4px;
   text-transform: uppercase;
@@ -68,7 +69,7 @@
 .stat-value {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #333;
+  color: var(--primary-color);
   line-height: 1;
 }
 

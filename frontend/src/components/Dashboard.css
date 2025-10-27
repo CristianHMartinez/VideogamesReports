@@ -3,6 +3,10 @@
 .dashboard {
   padding: 2rem;
   width: 100%;
+  background: var(--card-background);
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+  margin: 1rem;
 }
 
 .dashboard-loading {
@@ -18,8 +22,8 @@
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
+  border: 4px solid rgba(22, 57, 79, 0.2);
+  border-top: 4px solid var(--primary-color);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -32,17 +36,24 @@
 .dashboard-header {
   margin-bottom: 2rem;
   text-align: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+  border-radius: 8px;
+  box-shadow: var(--shadow-light);
 }
 
 .dashboard-header h2 {
-  color: #2c3e50;
+  color: white;
   font-size: 2rem;
   margin-bottom: 0.5rem;
+  font-weight: 700;
 }
 
 .dashboard-header p {
-  color: #7f8c8d;
+  color: var(--accent-color);
   font-size: 1.1rem;
+  opacity: 0.9;
 }
 
 .dashboard-resumen {

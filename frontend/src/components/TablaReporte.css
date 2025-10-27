@@ -1,10 +1,19 @@
 /* TablaReporte.css - Estilos específicos para el componente TablaReporte */
 
 .tabla-reporte {
-  background: white;
+  background: var(--card-background);
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: none; /* Permitir que la tabla sea más ancha */
+  overflow: hidden;
+}
+
+.tabla-reporte:hover {
+  box-shadow: var(--shadow-medium);
 }
 
 .tabla-header {
@@ -14,90 +23,114 @@
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+  border-radius: 6px;
+  margin: -1rem -1rem 1.5rem -1rem;
 }
 
 .tabla-header h3 {
-  color: #2c3e50;
+  color: white;
   font-size: 1.25rem;
   margin: 0;
+  font-weight: 600;
 }
 
 .tabla-header input {
   min-width: 200px;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
   font-size: 0.9rem;
-  transition: border-color 0.2s;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.tabla-header input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .tabla-header input:focus {
   outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .btn-exportar {
   width: auto;
-  padding: 0.5rem 1rem;
-  background: #27ae60;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 255, 255, 0.1);
   color: white;
-  border: none;
-  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
   min-width: auto;
+  font-weight: 500;
 }
 
 .btn-exportar:hover {
-  background: #229954;
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
 }
 
 .btn-copy {
   width: auto;
-  padding: 0.5rem 1rem;
-  background: #9b59b6;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 255, 255, 0.1);
   color: white;
-  border: none;
-  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
   min-width: auto;
+  font-weight: 500;
 }
 
 .btn-copy:hover {
-  background: #8e44ad;
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
 }
 
 .tabla-container {
   overflow-x: auto;
+  min-width: 100%;
 }
 
 .tabla-reporte table {
   width: 100%;
+  min-width: 1600px; /* Aumentar más el ancho mínimo */
   border-collapse: collapse;
+  table-layout: fixed; /* Para controlar mejor el ancho de las columnas */
 }
 
 .tabla-reporte th,
 .tabla-reporte td {
   padding: 0.75rem;
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .tabla-reporte th {
-  background: #34495e;
+  background: var(--primary-color);
   color: white;
   font-weight: 600;
   position: relative;
   user-select: none;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
 }
 
 .tabla-reporte th:hover {
-  background: #2c3e50;
+  background: var(--secondary-color);
 }
 
 .tabla-reporte th.sortable {
@@ -105,12 +138,95 @@
 }
 
 .tabla-reporte tr {
-  color: black;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
 }
 
 .tabla-reporte tr:hover {
-  background: #f8f9fa;
-  color: #2c3e50;
+  background: var(--hover-bg);
+  color: var(--text-primary);
+  transform: scale(1.01);
+}
+
+/* Estilos específicos para columnas usando clases */
+.tabla-reporte .col-id {
+  width: 8%; 
+  min-width: 80px;
+}
+
+.tabla-reporte .col-title {
+  width: 18%; 
+  min-width: 180px;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.tabla-reporte .col-release-date {
+  width: 10%; 
+  min-width: 100px;
+  text-align: center;
+}
+
+.tabla-reporte .col-developers {
+  width: 15%; 
+  min-width: 150px;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.tabla-reporte .col-summary {
+  width: 35%; /* SUMMARY - La más ancha */
+  min-width: 400px;
+  max-width: none;
+  word-wrap: break-word;
+  white-space: normal;
+  line-height: 1.5;
+  padding: 15px 12px;
+  font-size: 0.9rem;
+}
+
+.tabla-reporte .col-platforms {
+  width: 14%; 
+  min-width: 140px;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.4;
+}
+
+/* Ajustar el padding de las celdas para mejor legibilidad */
+.tabla-reporte td {
+  padding: 12px 8px;
+  vertical-align: top;
+}
+
+/* Mejorar la legibilidad del texto en SUMMARY */
+.tabla-reporte tbody tr:hover .col-summary {
+  background: rgba(22, 57, 79, 0.05);
+  border-radius: 4px;
+}
+
+/* Estilo especial para columnas con texto largo */
+.tabla-reporte .col-summary,
+.tabla-reporte .col-title,
+.tabla-reporte .col-developers,
+.tabla-reporte .col-platforms {
+  max-height: none;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+/* Mejorar la visualización de listas en PLATFORMS */
+.tabla-reporte .col-platforms {
+  font-size: 0.85rem;
+}
+
+/* Mejorar espaciado en celdas con listas */
+.tabla-reporte td.col-platforms,
+.tabla-reporte td.col-developers {
+  padding: 12px 10px;
+  vertical-align: top;
 }
 
 .tabla-footer {

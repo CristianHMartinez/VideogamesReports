@@ -1,21 +1,31 @@
 /* FiltrosAvanzados.css - Estilos específicos para el componente FiltrosAvanzados */
 
 .filtros-avanzados {
-  background: white;
+  background: var(--card-background);
   padding: 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-light);
   margin-bottom: 1rem;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.filtros-avanzados:hover {
+  box-shadow: var(--shadow-medium);
 }
 
 .filtros-avanzados h3 {
-  color: #2c3e50;
+  color: var(--primary-color);
   margin-bottom: 1rem;
   font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .filtros-mensaje {
-  color: #7f8c8d;
+  color: var(--text-secondary);
   font-style: italic;
   text-align: center;
   padding: 1rem;
@@ -36,24 +46,28 @@
 
 .filtro-item label {
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .filtro-item input,
 .filtro-item select {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
   font-size: 0.9rem;
-  transition: border-color 0.2s;
+  transition: all 0.3s ease;
+  background: var(--card-background);
+  color: var(--text-primary);
 }
 
 .filtro-item input:focus,
 .filtro-item select:focus {
   outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(56, 112, 126, 0.1);
 }
 
 .filtro-item select:disabled,

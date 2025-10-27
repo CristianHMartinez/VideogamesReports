@@ -10,8 +10,9 @@
   flex: 1;
   overflow: auto;
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  background: white;
+  border: 1px solid var(--border-color);
+  background: var(--card-background);
+  box-shadow: var(--shadow-light);
 }
 
 .top-juegos-tabla {
@@ -22,7 +23,7 @@
 }
 
 .top-juegos-tabla thead {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   color: white;
   position: sticky;
   top: 0;
@@ -58,19 +59,20 @@
 }
 
 .top-juegos-tabla tbody tr:nth-child(even) {
-  background-color: #f8f9fa;
+  background-color: var(--background-color);
 }
 
 .top-juegos-tabla tbody tr:hover {
-  background-color: #e3f2fd;
+  background-color: var(--hover-bg);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-light);
 }
 
 .top-juegos-tabla td {
   padding: 10px 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
+  color: var(--text-primary);
 }
 
 /* Columnas específicas */

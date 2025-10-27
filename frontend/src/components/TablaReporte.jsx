@@ -158,7 +158,7 @@ function TablaReporte({ datos = [], totalRegistros }) {
               {columnas.map((col) => (
                 <th
                   key={col}
-                  className="sortable"
+                  className={`sortable col-${col.toLowerCase().replace('_', '-')}`}
                   onClick={() => toggleSort(col)}
                   title={`Ordenar por ${col}`}
                 >
@@ -172,8 +172,10 @@ function TablaReporte({ datos = [], totalRegistros }) {
             {paged.map((row, idx) => (
               <tr key={idx}>
                 {columnas.map((col) => (
-                  <td key={col}>
-                    {typeof row[col] === 'object'
+                  <td key={col} className={`col-${col.toLowerCase().replace('_', '-')}`}>
+                    {typeof row[col] === 'object' && Array.isArray(row[col])
+                      ? row[col].join(', ')
+                      : typeof row[col] === 'object'
                       ? JSON.stringify(row[col])
                       : String(row[col] ?? '')}
                   </td>
