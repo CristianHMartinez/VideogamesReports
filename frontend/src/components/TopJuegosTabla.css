@@ -111,21 +111,23 @@
 
 .rank-badge {
   display: inline-block;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6c757d, #495057);
+  background: linear-gradient(135deg, var(--accent-color), #95a5a6);
   color: white;
   font-weight: bold;
   font-size: 0.85rem;
   text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .rank-badge.top-3 {
-  background: linear-gradient(135deg, #ffd700, #ffb347);
-  color: #333;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  box-shadow: 0 3px 8px rgba(22, 57, 79, 0.3);
+  font-size: 0.9rem;
 }
 
 .nombre-cell {
@@ -146,25 +148,26 @@
 
 .rating-badge {
   display: inline-block;
-  padding: 4px 8px;
+  padding: 6px 12px;
   border-radius: 12px;
   color: white;
   font-weight: bold;
-  font-size: 0.8rem;
-  min-width: 35px;
+  font-size: 0.85rem;
+  min-width: 45px;
   text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .rating-badge.high {
-  background: linear-gradient(135deg, #28a745, #20c997);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
 }
 
 .rating-badge.medium {
-  background: linear-gradient(135deg, #ffc107, #fd7e14);
+  background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
 }
 
 .rating-badge.low {
-  background: linear-gradient(135deg, #dc3545, #e83e8c);
+  background: linear-gradient(135deg, #7f8c8d, #95a5a6);
 }
 
 .score-cell {
@@ -173,12 +176,14 @@
 
 .score-value {
   display: inline-block;
-  padding: 3px 6px;
-  background: linear-gradient(135deg, #6f42c1, #e83e8c);
+  padding: 6px 12px;
+  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
   color: white;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  min-width: 45px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .generos-cell, .dev-cell {
