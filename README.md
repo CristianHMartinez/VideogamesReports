@@ -10,22 +10,21 @@ Sistema de reportes y análisis de datos de videojuegos con MongoDB, FastAPI y R
 
 ---
 
-## 📋 Descripción
+## Descripción
 
 Aplicación web completa para generar reportes personalizados desde MongoDB Atlas, con visualización de datos interactiva y análisis estadísticos de videojuegos.
 
-### ✨ Características Principales
+###  Características Principales
 
-- 📊 **Dashboard Interactivo** - Visualización de métricas clave
-- 📈 **Gráficos Dinámicos** - LineChart, BarChart, DonutChart
-- 🔍 **Filtros Avanzados** - Búsqueda y filtrado por múltiples criterios
-- 📥 **Exportación CSV** - Descarga de reportes personalizados
-- 🎯 **Top Rankings** - Juegos más populares y mejor valorados
-- 📱 **Responsive Design** - Adaptable a todos los dispositivos
+-  **Dashboard** - Visualización de métricas clave
+-  **Gráficos Dinámicos** - LineChart, BarChart, DonutChart
+-  **Filtros** - Búsqueda y filtrado por múltiples criterios
+-  **Exportación CSV** - Descarga de reportes personalizados
+-  **Top Rankings** - Juegos más populares y mejor valorados
 
 ---
 
-## 🏗️ Arquitectura
+##  Arquitectura
 
 ```
 ┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
@@ -38,20 +37,8 @@ Aplicación web completa para generar reportes personalizados desde MongoDB Atla
 
 ---
 
-## 🚀 Despliegue en Railway
 
-### Opción 1: Guía Rápida
-Lee **[QUICK_DEPLOY.md](./QUICK_DEPLOY.md)** para un resumen con comandos.
-
-### Opción 2: Guía Completa
-Lee **[DEPLOYMENT.md](./DEPLOYMENT.md)** para instrucciones detalladas paso a paso.
-
-### Opción 3: Configuración Inicial
-Lee **[SETUP.md](./SETUP.md)** para información sobre archivos creados.
-
----
-
-## 💻 Desarrollo Local
+## Desarrollo Local
 
 ### Requisitos Previos
 
@@ -106,7 +93,7 @@ El frontend estará disponible en: `http://localhost:5173`
 
 ---
 
-## 📁 Estructura del Proyecto
+##  Estructura del Proyecto
 
 ```
 VideogamesReports/
@@ -147,7 +134,7 @@ VideogamesReports/
 
 ---
 
-## 🔑 Variables de Entorno
+##  Variables de Entorno
 
 ### Backend (.env)
 
@@ -166,7 +153,7 @@ VITE_API_URL=https://tu-backend.railway.app/api
 
 ---
 
-## 📊 Endpoints API Principales
+##  Endpoints API Principales
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
@@ -181,7 +168,7 @@ Ver documentación completa en: `http://localhost:8000/docs`
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 ### Backend
 - **FastAPI** - Framework web moderno y rápido
@@ -204,7 +191,7 @@ Ver documentación completa en: `http://localhost:8000/docs`
 
 ---
 
-## 📈 Características de Análisis
+##  Características de Análisis
 
 - ✅ Conteo por campo
 - ✅ Distribución temporal
@@ -217,7 +204,7 @@ Ver documentación completa en: `http://localhost:8000/docs`
 
 ---
 
-## 🤝 Contribuir
+## Contribuir
 
 Las contribuciones son bienvenidas. Por favor:
 
@@ -229,37 +216,9 @@ Las contribuciones son bienvenidas. Por favor:
 
 ---
 
-## 📝 Licencia
-
-Este proyecto está bajo la Licencia MIT.
-
----
-
-## 👨‍💻 Autor
+##  Autor
 
 **Cristian H. Martinez**
 - GitHub: [@CristianHMartinez](https://github.com/CristianHMartinez)
 
 ---
-
-## 🆘 Soporte
-
-¿Problemas con el despliegue? Consulta:
-- [DEPLOYMENT.md](./DEPLOYMENT.md) - Sección "Solución de Problemas"
-- [Documentación de Railway](https://docs.railway.app)
-- [Documentación de FastAPI](https://fastapi.tiangolo.com)
-
----
-
-## 🎯 Roadmap
-
-- [ ] Autenticación de usuarios
-- [ ] Exportación a Excel
-- [ ] Más tipos de gráficos
-- [ ] Filtros guardados
-- [ ] Comparación de juegos
-- [ ] API pública
-
----
-
-**¡Hecho con ❤️ para la comunidad gamer!** 🎮
