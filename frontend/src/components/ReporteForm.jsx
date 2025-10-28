@@ -60,7 +60,7 @@ function ReporteForm({ onReporteGenerado }) {
   return (
     <div className="reporte-form-modern">
       <div className="form-section">
-        <h3 className="section-title">🗂️ Selección de Datos</h3>
+        <h3 className="section-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-folder"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 3a1 1 0 0 1 .608 .206l.1 .087l2.706 2.707h6.586a3 3 0 0 1 2.995 2.824l.005 .176v8a3 3 0 0 1 -2.824 2.995l-.176 .005h-14a3 3 0 0 1 -2.995 -2.824l-.005 -.176v-11a3 3 0 0 1 2.824 -2.995l.176 -.005h4z" /></svg> Selección de Datos</h3>
         
         <div className="form-row">
           <div className="form-group">
@@ -75,10 +75,10 @@ function ReporteForm({ onReporteGenerado }) {
               required
               className="form-select"
             >
-              <option value="">🔍 Seleccione una colección...</option>
+              <option value=""> Seleccione una colección...</option>
               {colecciones.map((col) => (
                 <option key={col} value={col}>
-                  📋 {col}
+                   {col}
                 </option>
               ))}
             </select>
@@ -91,11 +91,11 @@ function ReporteForm({ onReporteGenerado }) {
               onChange={(e) => setLimite(e.target.value)}
               className="form-select"
             >
-              <option value={100}>📄 100 registros</option>
-              <option value={500}>📄 500 registros</option>
-              <option value={1000}>📄 1,000 registros</option>
-              <option value={5000}>📄 5,000 registros</option>
-              <option value={10000}>📄 10,000 registros</option>
+              <option value={100}> 100 registros</option>
+              <option value={500}> 500 registros</option>
+              <option value={1000}> 1,000 registros</option>
+              <option value={5000}> 5,000 registros</option>
+              <option value={10000}> 10,000 registros</option>
             </select>
           </div>
         </div>
@@ -103,7 +103,7 @@ function ReporteForm({ onReporteGenerado }) {
 
       {coleccionSeleccionada && (
         <div className="form-section">
-          <h3 className="section-title">🔧 Filtros Avanzados</h3>
+          <h3 className="section-title">Filtros</h3>
           <div className="filtros-container">
             <FiltrosAvanzados 
               coleccion={coleccionSeleccionada}
@@ -116,10 +116,9 @@ function ReporteForm({ onReporteGenerado }) {
 
       {campos.length > 0 && (
         <div className="form-section">
-          <h3 className="section-title">📊 Información de la Colección</h3>
+          <h3 className="section-title">Información de la Colección</h3>
           <div className="campos-info-modern">
             <div className="info-header">
-              <span className="info-icon">🏷️</span>
               <span className="info-title">Campos Disponibles ({campos.length})</span>
             </div>
             <div className="campos-tags">
@@ -147,7 +146,7 @@ function ReporteForm({ onReporteGenerado }) {
             </>
           ) : (
             <>
-              <span className="btn-icon">🚀</span>
+              <span className="btn-icon"></span>
               Generar Reporte
             </>
           )}
@@ -156,7 +155,7 @@ function ReporteForm({ onReporteGenerado }) {
         {coleccionSeleccionada && (
           <div className="form-info">
             <span className="info-text">
-              ✨ Se generará un reporte de máximo {parseInt(limite).toLocaleString()} registros de la colección "{coleccionSeleccionada}"
+               Se generará un reporte de máximo {parseInt(limite).toLocaleString()} registros de la colección "{coleccionSeleccionada}"
             </span>
           </div>
         )}

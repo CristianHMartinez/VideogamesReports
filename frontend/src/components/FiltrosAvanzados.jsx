@@ -153,7 +153,7 @@ function FiltrosAvanzados({ coleccion, onFiltrosChange, filtrosIniciales = {} })
 
   return (
     <div className={`filtros-avanzados ${tieneAlgunFiltro ? 'filtro-activo' : ''}`}>
-      <h3>Filtros Avanzados</h3>
+      <h3>Filtros</h3>
       
       {!coleccion ? (
         <p className="filtros-mensaje">Selecciona una colección para activar los filtros</p>

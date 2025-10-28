@@ -227,7 +227,7 @@ function Dashboard({ onCambiarVista }) {
 
   return (
     <div className="dashboard-v2">
-      <div className="title-bar">📊 DASHBOARD DE ANÁLISIS DE VIDEOJUEGOS</div>
+      <div className="title-bar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chart-bar"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M4 20h14" /></svg> DASHBOARD DE ANÁLISIS DE VIDEOJUEGOS</div>
 
       {/* Métricas principales */}
       <section className="stats-grid">
@@ -256,7 +256,7 @@ function Dashboard({ onCambiarVista }) {
       {/* Fila 1 de gráficos */}
       <section className="section-grid-2">
         <article className="panel">
-          <header className="panel-header">📈 Juegos Lanzados por Año</header>
+          <header className="panel-header"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-timeline"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 16l6 -7l5 5l5 -6" /><path d="M15 14m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M10 9m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M20 8m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg> Juegos Lanzados por Año</header>
           <div className="panel-body">
             {seriesAnio.length > 0 ? (
               <LineChart data={seriesAnio} />
@@ -266,7 +266,7 @@ function Dashboard({ onCambiarVista }) {
           </div>
         </article>
         <article className="panel">
-          <header className="panel-header">📊 Top Géneros</header>
+          <header className="panel-header"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-trophy"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3a1 1 0 0 1 .993 .883l.007 .117v2.17a3 3 0 1 1 0 5.659v.171a6.002 6.002 0 0 1 -5 5.917v2.083h3a1 1 0 0 1 .117 1.993l-.117 .007h-8a1 1 0 0 1 -.117 -1.993l.117 -.007h3v-2.083a6.002 6.002 0 0 1 -4.996 -5.692l-.004 -.225v-.171a3 3 0 0 1 -3.996 -2.653l-.003 -.176l.005 -.176a3 3 0 0 1 3.995 -2.654l-.001 -2.17a1 1 0 0 1 1 -1h10zm-12 5a1 1 0 1 0 0 2a1 1 0 0 0 0 -2zm14 0a1 1 0 1 0 0 2a1 1 0 0 0 0 -2z" /></svg>Top Géneros</header>
           <div className="panel-body">
             {seriesGeneros.length > 0 ? (
               <BarChart data={seriesGeneros} />
@@ -280,7 +280,7 @@ function Dashboard({ onCambiarVista }) {
       {/* Fila 2 de gráficos */}
       <section className="section-grid-2">
         <article className="panel">
-          <header className="panel-header">🍩 Distribución por Rating</header>
+          <header className="panel-header"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-chart-donut"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11.292 2.61c.396 .318 .65 .78 .703 1.286l.005 .104v4a1 1 0 0 1 -.748 .968a3.1 3.1 0 1 0 3.78 3.78a1 1 0 0 1 .968 -.748h3.8a2 2 0 0 1 2 2a1 1 0 0 1 -.026 .226a10 10 0 1 1 -12 -12l.057 -.01l.052 -.01a1.9 1.9 0 0 1 1.409 .404m3.703 -.11l.045 .002l.067 .004l.081 .014l.032 .004l.072 .022l.04 .01a10 10 0 0 1 6.003 5.818l.108 .294a1 1 0 0 1 -.943 1.332h-4.5a1 1 0 0 1 -.76 -.35a8 8 0 0 0 -.89 -.89a1 1 0 0 1 -.35 -.76v-4.5q .001 -.119 .026 -.23l.03 -.102a1 1 0 0 1 .168 -.299l.03 -.033l.039 -.043a1 1 0 0 1 .089 -.08l.051 -.034l.03 -.023l.045 -.025l.052 -.03a1 1 0 0 1 .435 -.101" /></svg> Distribución por Rating</header>
           <div className="panel-body">
             {distribucionRating.length > 0 ? (
               <DonutChart data={distribucionRating} />
@@ -290,7 +290,7 @@ function Dashboard({ onCambiarVista }) {
           </div>
         </article>
         <article className="panel">
-          <header className="panel-header">📊 Top Desarrolla.</header>
+          <header className="panel-header"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-trophy"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3a1 1 0 0 1 .993 .883l.007 .117v2.17a3 3 0 1 1 0 5.659v.171a6.002 6.002 0 0 1 -5 5.917v2.083h3a1 1 0 0 1 .117 1.993l-.117 .007h-8a1 1 0 0 1 -.117 -1.993l.117 -.007h3v-2.083a6.002 6.002 0 0 1 -4.996 -5.692l-.004 -.225v-.171a3 3 0 0 1 -3.996 -2.653l-.003 -.176l.005 -.176a3 3 0 0 1 3.995 -2.654l-.001 -2.17a1 1 0 0 1 1 -1h10zm-12 5a1 1 0 1 0 0 2a1 1 0 0 0 0 -2zm14 0a1 1 0 1 0 0 2a1 1 0 0 0 0 -2z" /></svg>Top Desarrolla.</header>
           <div className="panel-body">
             {seriesDesarrolladores.length > 0 ? (
               <HorizontalBarChart data={seriesDesarrolladores} />
@@ -304,7 +304,7 @@ function Dashboard({ onCambiarVista }) {
       {/* Tabla principal */}
       <section className="section-grid-1">
         <article className="panel">
-          <header className="panel-header">🏆 Top 20 Juegos Más Populares</header>
+          <header className="panel-header"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-trophy"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3a1 1 0 0 1 .993 .883l.007 .117v2.17a3 3 0 1 1 0 5.659v.171a6.002 6.002 0 0 1 -5 5.917v2.083h3a1 1 0 0 1 .117 1.993l-.117 .007h-8a1 1 0 0 1 -.117 -1.993l.117 -.007h3v-2.083a6.002 6.002 0 0 1 -4.996 -5.692l-.004 -.225v-.171a3 3 0 0 1 -3.996 -2.653l-.003 -.176l.005 -.176a3 3 0 0 1 3.995 -2.654l-.001 -2.17a1 1 0 0 1 1 -1h10zm-12 5a1 1 0 1 0 0 2a1 1 0 0 0 0 -2zm14 0a1 1 0 1 0 0 2a1 1 0 0 0 0 -2z" /></svg> Top 20 Juegos Más Populares</header>
           <div className="panel-body">
             {topJuegosPopulares.length > 0 ? (
               <TopJuegosTabla data={topJuegosPopulares} />
@@ -345,7 +345,7 @@ function Dashboard({ onCambiarVista }) {
 
       <div className="dashboard-footer">
         <p>Última actualización: {new Date().toLocaleString()}</p>
-        <button onClick={cargarDatosDashboard} className="btn-actualizar">🔄 Actualizar</button>
+        <button onClick={cargarDatosDashboard} className="btn-actualizar"> Actualizar</button>
       </div>
     </div>
   );

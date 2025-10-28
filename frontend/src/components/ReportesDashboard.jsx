@@ -75,21 +75,21 @@ function ReportesDashboard() {
       <div className="reportes-header">
         <div className="header-content">
           <h1 className="reportes-title">
-            📊 SISTEMA DE REPORTES AVANZADOS
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chart-bar"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M4 20h14" /></svg> SISTEMA DE REPORTES
           </h1>
           <div className="header-controls">
             <button 
               className={`tab-button ${vistaActiva === 'generador' ? 'active' : ''}`}
               onClick={() => setVistaActiva('generador')}
             >
-              🔧 Generador
+             Generador
             </button>
             <button 
               className={`tab-button ${vistaActiva === 'resultados' ? 'active' : ''}`}
               onClick={() => setVistaActiva('resultados')}
               disabled={!reporteData}
             >
-              📋 Resultados
+              Resultados
             </button>
           </div>
         </div>
@@ -108,8 +108,8 @@ function ReportesDashboard() {
           <div className="generador-section">
             <div className="form-panel">
               <div className="panel-header">
-                <h2>🛠️ Configuración del Reporte</h2>
-                <p>Configure los parámetros para generar su reporte personalizado</p>
+                <h2>Configuración del Reporte</h2>
+                <p>Configure los parámetros para generar su reporte </p>
               </div>
               <div className="panel-body">
                 <ReporteForm onReporteGenerado={handleReporteGenerado} />
