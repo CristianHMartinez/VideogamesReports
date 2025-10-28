@@ -1,9 +1,14 @@
 import axios from 'axios';
 
 // Configuración de la URL base de la API
-// En desarrollo: usa localhost
-// En producción: usa la variable de entorno VITE_API_URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// IMPORTANTE: Siempre usa la variable de entorno VITE_API_URL
+// Si no está configurada, usa la URL de producción directamente
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://videogamesreports-production.up.railway.app';
+
+// Log para debugging (solo en desarrollo)
+if (import.meta.env.DEV) {
+  console.log('🔗 API Base URL:', API_BASE_URL);
+}
 
 const api = axios.create({
   baseURL: API_BASE_URL,
