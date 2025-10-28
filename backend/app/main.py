@@ -12,6 +12,7 @@ app = FastAPI(
 # Configurar CORS - permitir todos los orígenes en producción
 # En producción deberías especificar tu dominio de frontend
 allowed_origins = [
+    "tranquil-fascination-production.up.railway.app",
     "http://localhost:3000",
     "http://localhost:5173",
     "https://*.railway.app",  # Permite todos los subdominios de Railway
