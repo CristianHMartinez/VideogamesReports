@@ -12,14 +12,14 @@ export default function DonutChart({ data = [] }) {
     const outerRadius = 80;
     const innerRadius = 45;
     
-    // Colores predefinidos para rangos de rating
+    // Colores consistentes con el tema del sitio
     const colors = [
-      '#ef4444', // Rojo - ratings bajos
-      '#f97316', // Naranja
-      '#eab308', // Amarillo
-      '#22c55e', // Verde - ratings altos
-      '#3b82f6', // Azul
-      '#8b5cf6', // Púrpura
+      '#16394F', // Azul oscuro principal
+      '#38707e', // Azul medio
+      '#2c3e50', // Azul gris oscuro
+      '#7f8c8d', // Gris medio
+      '#bdc3c7', // Gris claro
+      '#34495e', // Azul gris
     ];
     
     let currentAngle = -90; // Empezar desde arriba
@@ -70,7 +70,7 @@ export default function DonutChart({ data = [] }) {
         ...item,
         pathData,
         percentage: percentage.toFixed(1),
-        color: item.color || colors[index % colors.length],
+        color: colors[index % colors.length], // Siempre usar colores del tema
         labelX,
         labelY,
         midAngle
@@ -103,7 +103,11 @@ export default function DonutChart({ data = [] }) {
               stroke="#ffffff"
               strokeWidth="2"
               className="donut-segment"
-              style={{ cursor: 'pointer' }}
+              style={{ 
+                cursor: 'pointer',
+                filter: 'drop-shadow(0 2px 4px rgba(22, 57, 79, 0.2))',
+                transition: 'all 0.3s ease'
+              }}
             />
             
             {/* Label de porcentaje si es lo suficientemente grande */}
@@ -129,16 +133,17 @@ export default function DonutChart({ data = [] }) {
           cx={center}
           cy={center}
           r={35}
-          fill="#f8f9fa"
-          stroke="#e9ecef"
+          fill="#ffffff"
+          stroke="rgba(22, 57, 79, 0.2)"
           strokeWidth="2"
+          style={{filter: 'drop-shadow(0 2px 4px rgba(22, 57, 79, 0.1))'}}
         />
         <text
           x={center}
           y={center - 8}
           textAnchor="middle"
           fontSize="11"
-          fill="#6b7280"
+          fill="#7f8c8d"
           fontWeight="500"
         >
           Total
@@ -148,7 +153,7 @@ export default function DonutChart({ data = [] }) {
           y={center + 8}
           textAnchor="middle"
           fontSize="16"
-          fill="#374151"
+          fill="#16394F"
           fontWeight="700"
         >
           {total.toLocaleString()}

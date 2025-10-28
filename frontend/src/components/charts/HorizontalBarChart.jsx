@@ -6,7 +6,7 @@ import React, { useMemo } from 'react';
  *  - data: Array<{ desarrollador: string, count: number }>
  *  - color?: fill color for bars
  */
-export default function HorizontalBarChart({ data = [], color = '#8b5cf6' }) {
+export default function HorizontalBarChart({ data = [], color = '#16394F' }) {
   const { bars, maxCount } = useMemo(() => {
     const sorted = [...data]
       .sort((a, b) => (b.count || 0) - (a.count || 0))
@@ -45,6 +45,14 @@ export default function HorizontalBarChart({ data = [], color = '#8b5cf6' }) {
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} width="100%" height="320">
+      {/* Gradient definition */}
+      <defs>
+        <linearGradient id="horizontalBarGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style={{stopColor: '#16394F', stopOpacity: 1}} />
+          <stop offset="100%" style={{stopColor: '#38707e', stopOpacity: 1}} />
+        </linearGradient>
+      </defs>
+
       {/* Background grid lines */}
       {xTickValues.map((v, i) => (
         <line 
@@ -53,7 +61,7 @@ export default function HorizontalBarChart({ data = [], color = '#8b5cf6' }) {
           x2={x((v / maxCount) * 100)} 
           y1={padding.top} 
           y2={padding.top + chartH}
-          stroke="#f3f4f6" 
+          stroke="rgba(22, 57, 79, 0.1)" 
           strokeWidth="1"
         />
       ))}
@@ -64,7 +72,7 @@ export default function HorizontalBarChart({ data = [], color = '#8b5cf6' }) {
         y1={padding.top + chartH} 
         x2={padding.left + chartW} 
         y2={padding.top + chartH} 
-        stroke="#e5e7eb" 
+        stroke="rgba(22, 57, 79, 0.3)" 
         strokeWidth="2"
       />
 
@@ -74,7 +82,7 @@ export default function HorizontalBarChart({ data = [], color = '#8b5cf6' }) {
         y1={padding.top} 
         x2={padding.left} 
         y2={padding.top + chartH} 
-        stroke="#e5e7eb" 
+        stroke="rgba(22, 57, 79, 0.3)" 
         strokeWidth="2"
       />
 
@@ -86,7 +94,8 @@ export default function HorizontalBarChart({ data = [], color = '#8b5cf6' }) {
           y={padding.top + chartH + 15} 
           textAnchor="middle" 
           fontSize="11" 
-          fill="#6b7280"
+          fill="#7f8c8d"
+          fontWeight="500"
         >
           {v}
         </text>
@@ -102,8 +111,8 @@ export default function HorizontalBarChart({ data = [], color = '#8b5cf6' }) {
             textAnchor="end"
             dominantBaseline="middle"
             fontSize="11"
-            fill="#374151"
-            fontWeight="500"
+            fill="#2c3e50"
+            fontWeight="600"
           >
             {bar.desarrollador.length > 18 ? `${bar.desarrollador.substring(0, 18)}...` : bar.desarrollador}
           </text>
@@ -114,20 +123,23 @@ export default function HorizontalBarChart({ data = [], color = '#8b5cf6' }) {
             y={y(i)}
             width={barW(bar.width)}
             height={barHeight}
-            fill={color}
-            rx="3"
+            fill="url(#horizontalBarGradient)"
+            rx="4"
             className="bar"
-            style={{ cursor: 'pointer' }}
+            style={{ 
+              cursor: 'pointer',
+              filter: 'drop-shadow(0 2px 4px rgba(22, 57, 79, 0.2))'
+            }}
           />
           
           {/* Value label (right side of bar) */}
           <text
-            x={x(bar.width) + 6}
+            x={x(bar.width) + 8}
             y={y(i) + barHeight / 2}
             textAnchor="start"
             dominantBaseline="middle"
             fontSize="11"
-            fill="#374151"
+            fill="#2c3e50"
             fontWeight="600"
           >
             {bar.count}
@@ -140,9 +152,9 @@ export default function HorizontalBarChart({ data = [], color = '#8b5cf6' }) {
         x={width / 2}
         y={15}
         textAnchor="middle"
-        fontSize="12"
-        fill="#374151"
-        fontWeight="600"
+        fontSize="14"
+        fill="#16394F"
+        fontWeight="700"
       >
         Top Desarrolladores por Cantidad de Juegos
       </text>

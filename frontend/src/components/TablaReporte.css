@@ -105,16 +105,17 @@
 
 .tabla-reporte table {
   width: 100%;
-  min-width: 1600px; /* Aumentar más el ancho mínimo */
+  min-width: 3000px; /* Aumentado para dar más espacio a las columnas */
   border-collapse: collapse;
-  table-layout: fixed; /* Para controlar mejor el ancho de las columnas */
+  table-layout: auto; /* Cambiado a auto para mejor distribución */
 }
 
 .tabla-reporte th,
 .tabla-reporte td {
-  padding: 0.75rem;
+  padding: 12px 16px; /* Mejor padding horizontal */
   text-align: left;
   border-bottom: 1px solid var(--border-color);
+  vertical-align: top;
 }
 
 .tabla-reporte th {
@@ -150,55 +151,61 @@
 
 /* Estilos específicos para columnas usando clases */
 .tabla-reporte .col-id {
-  width: 8%; 
+  width: 80px;
   min-width: 80px;
+  max-width: 80px;
 }
 
 .tabla-reporte .col-title {
-  width: 18%; 
-  min-width: 180px;
+  width: 350px;
+  min-width: 350px;
+  max-width: 350px;
   word-wrap: break-word;
   white-space: normal;
+  overflow-wrap: break-word;
+  padding: 12px 16px !important;
 }
 
 .tabla-reporte .col-release-date {
-  width: 10%; 
-  min-width: 100px;
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
   text-align: center;
+  white-space: nowrap;
 }
 
 .tabla-reporte .col-developers {
-  width: 15%; 
-  min-width: 150px;
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
   word-wrap: break-word;
   white-space: normal;
+  overflow-wrap: break-word;
+  padding: 12px 16px !important;
 }
 
 .tabla-reporte .col-summary {
-  width: 35%; /* SUMMARY - La más ancha */
-  min-width: 400px;
-  max-width: none;
+  width: 500px;
+  min-width: 500px;
+  max-width: 500px;
   word-wrap: break-word;
   white-space: normal;
-  line-height: 1.5;
-  padding: 15px 12px;
+  overflow-wrap: break-word;
+  line-height: 1.6;
+  padding: 12px 16px !important;
   font-size: 0.9rem;
 }
 
 .tabla-reporte .col-platforms {
-  width: 14%; 
-  min-width: 140px;
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
   word-wrap: break-word;
   white-space: normal;
   overflow-wrap: break-word;
-  hyphens: auto;
-  line-height: 1.4;
-}
-
-/* Ajustar el padding de las celdas para mejor legibilidad */
-.tabla-reporte td {
-  padding: 12px 8px;
-  vertical-align: top;
+  line-height: 1.5;
+  padding: 12px 16px !important;
+  font-size: 0.85rem;
 }
 
 /* Mejorar la legibilidad del texto en SUMMARY */
@@ -207,26 +214,25 @@
   border-radius: 4px;
 }
 
-/* Estilo especial para columnas con texto largo */
+/* Asegurar que el texto largo se muestre correctamente */
 .tabla-reporte .col-summary,
 .tabla-reporte .col-title,
 .tabla-reporte .col-developers,
 .tabla-reporte .col-platforms {
   max-height: none;
   overflow: visible;
-  text-overflow: unset;
+  text-overflow: clip;
 }
 
-/* Mejorar la visualización de listas en PLATFORMS */
-.tabla-reporte .col-platforms {
-  font-size: 0.85rem;
+/* Mejorar la alineación de las celdas */
+.tabla-reporte th {
+  padding: 12px 16px !important;
+  white-space: nowrap;
 }
 
-/* Mejorar espaciado en celdas con listas */
-.tabla-reporte td.col-platforms,
-.tabla-reporte td.col-developers {
-  padding: 12px 10px;
-  vertical-align: top;
+/* Asegurar que las filas tengan altura automática */
+.tabla-reporte tr {
+  height: auto;
 }
 
 .tabla-footer {

@@ -22,7 +22,24 @@ function TablaReporte({ datos = [], totalRegistros }) {
     return <div className="no-data">No hay datos para mostrar</div>;
   }
 
-  const columnas = useMemo(() => Object.keys(datos[0]), [datos]);
+  // Filtrar columnas que tienen al menos un valor no vacío
+  const columnas = useMemo(() => {
+    if (!datos || datos.length === 0) return [];
+    
+    const allColumns = Object.keys(datos[0]);
+    
+    // Filtrar columnas que tienen al menos un valor válido
+    return allColumns.filter(col => {
+      return datos.some(row => {
+        const value = row[col];
+        // Considerar válido si no es null, undefined, string vacía, array vacío, o objeto vacío
+        if (value === null || value === undefined || value === '') return false;
+        if (Array.isArray(value) && value.length === 0) return false;
+        if (typeof value === 'object' && Object.keys(value).length === 0) return false;
+        return true;
+      });
+    });
+  }, [datos]);
 
   // Filtered data
   const filtered = useMemo(() => {

@@ -6,7 +6,7 @@ import React, { useMemo } from 'react';
  *  - data: Array<{ genero: string, count: number }>
  *  - color?: fill color for bars
  */
-export default function BarChart({ data = [], color = '#10b981' }) {
+export default function BarChart({ data = [], color = '#16394F' }) {
   const { bars, maxCount } = useMemo(() => {
     const sorted = [...data]
       .sort((a, b) => (b.count || 0) - (a.count || 0))
@@ -53,7 +53,7 @@ export default function BarChart({ data = [], color = '#10b981' }) {
           x2={padding.left + chartW} 
           y1={y((v / maxCount) * 100)} 
           y2={y((v / maxCount) * 100)}
-          stroke="#f3f4f6" 
+          stroke="rgba(22, 57, 79, 0.1)" 
           strokeWidth="1"
         />
       ))}
@@ -64,7 +64,7 @@ export default function BarChart({ data = [], color = '#10b981' }) {
         y1={padding.top} 
         x2={padding.left} 
         y2={padding.top + chartH} 
-        stroke="#e5e7eb" 
+        stroke="rgba(22, 57, 79, 0.3)" 
         strokeWidth="2"
       />
 
@@ -74,7 +74,7 @@ export default function BarChart({ data = [], color = '#10b981' }) {
         y1={padding.top + chartH} 
         x2={padding.left + chartW} 
         y2={padding.top + chartH} 
-        stroke="#e5e7eb" 
+        stroke="rgba(22, 57, 79, 0.3)" 
         strokeWidth="2"
       />
 
@@ -87,11 +87,19 @@ export default function BarChart({ data = [], color = '#10b981' }) {
           textAnchor="end" 
           dominantBaseline="middle" 
           fontSize="11" 
-          fill="#6b7280"
+          fill="#7f8c8d"
         >
           {v}
         </text>
       ))}
+
+      {/* Gradient definition */}
+      <defs>
+        <linearGradient id="barGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style={{stopColor: '#16394F', stopOpacity: 1}} />
+          <stop offset="100%" style={{stopColor: '#38707e', stopOpacity: 1}} />
+        </linearGradient>
+      </defs>
 
       {/* Bars */}
       {bars.map((bar, i) => (
@@ -101,19 +109,19 @@ export default function BarChart({ data = [], color = '#10b981' }) {
             y={y(bar.height)}
             width={barWidth}
             height={barH(bar.height)}
-            fill={color}
-            rx="2"
+            fill="url(#barGradient)"
+            rx="4"
             className="bar"
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', filter: 'drop-shadow(0 2px 4px rgba(22, 57, 79, 0.2))' }}
           />
           
           {/* Value label on top of bar */}
           <text
             x={x(i) + barWidth / 2}
-            y={y(bar.height) - 4}
+            y={y(bar.height) - 6}
             textAnchor="middle"
-            fontSize="10"
-            fill="#374151"
+            fontSize="11"
+            fill="#2c3e50"
             fontWeight="600"
           >
             {bar.count}
@@ -125,7 +133,7 @@ export default function BarChart({ data = [], color = '#10b981' }) {
             y={padding.top + chartH + 15}
             textAnchor="start"
             fontSize="10"
-            fill="#6b7280"
+            fill="#7f8c8d"
             transform={`rotate(45, ${x(i) + barWidth / 2}, ${padding.top + chartH + 15})`}
           >
             {bar.genero.length > 12 ? `${bar.genero.substring(0, 12)}...` : bar.genero}
@@ -138,9 +146,9 @@ export default function BarChart({ data = [], color = '#10b981' }) {
         x={width / 2}
         y={15}
         textAnchor="middle"
-        fontSize="12"
-        fill="#374151"
-        fontWeight="600"
+        fontSize="14"
+        fill="#16394F"
+        fontWeight="700"
       >
         Top 10 Géneros más Populares
       </text>
