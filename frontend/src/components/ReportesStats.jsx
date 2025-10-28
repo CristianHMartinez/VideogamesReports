@@ -47,7 +47,7 @@ function ReportesStats({ colecciones, estadisticas, totalRegistros }) {
       {colecciones.length > 3 && (
         <div className="collections-overflow">
           <div className="overflow-header">
-            <h4>📁 Otras Colecciones</h4>
+            <h4> Otras Colecciones</h4>
           </div>
           <div className="collections-list">
             {colecciones.slice(3).map((coleccion) => {
