@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import reportes
+import os
 
 app = FastAPI(
     title="API de Reportes MongoDB",
@@ -8,10 +9,18 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Configurar CORS
+# Configurar CORS - permitir todos los orígenes en producción
+# En producción deberías especificar tu dominio de frontend
+allowed_origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://*.railway.app",  # Permite todos los subdominios de Railway
+    "*"  # Temporalmente permite todos los orígenes (cambiar en producción)
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=["*"],  # En producción, reemplaza con tu dominio específico
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
