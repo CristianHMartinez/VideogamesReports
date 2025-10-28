@@ -37,8 +37,9 @@ git push -u origin main
    - Selecciona `VideogamesReports`
 
 2. **Configurar Backend:**
-   - Settings → General → Root Directory: `backend`
-   - Settings → General → Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   - **⚠️ MUY IMPORTANTE:** Settings → General → Root Directory: `backend`
+   - El Start Command se detecta automáticamente con `nixpacks.toml`
+   - Si es necesario, manualmente agrega: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 
 3. **Variables de entorno (pestaña Variables):**
    ```

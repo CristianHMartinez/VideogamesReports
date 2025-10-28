@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import reportes
+from app.database import database, DATABASE_NAME, MONGODB_URL
 import os
 
 app = FastAPI(
@@ -37,3 +38,33 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+@app.get("/test-db")
+async def test_database():
+    """Endpoint para probar la conexión a la base de datos"""
+    try:
+        # Intentar listar las colecciones
+        collections = await database.list_collection_names()
+        
+        # Contar documentos en la primera colección
+        collection_info = {}
+        if collections:
+            for col in collections[:3]:  # Solo las primeras 3 colecciones
+                count = await database[col].count_documents({})
+                collection_info[col] = count
+        
+        return {
+            "status": "success",
+            "mensaje": "Conexión exitosa a MongoDB",
+            "database_name": DATABASE_NAME,
+            "total_colecciones": len(collections),
+            "colecciones": collections,
+            "sample_counts": collection_info
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "mensaje": "Error al conectar a la base de datos",
+            "error": str(e),
+            "database_name": DATABASE_NAME
+        }
