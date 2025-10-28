@@ -3,7 +3,7 @@ import axios from 'axios';
 // Configuración de la URL base de la API
 // En desarrollo: usa localhost
 // En producción: reemplaza con tu URL de Railway
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'tranquil-fascination-production.up.railway.app';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
