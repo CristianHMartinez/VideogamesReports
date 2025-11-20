@@ -3,6 +3,8 @@ import { reportesAPI } from '../services/api';
 import ReporteForm from './ReporteForm';
 import TablaReporte from './TablaReporte';
 import ReportesStats from './ReportesStats';
+import RegressionView from './RegressionView';
+import CorrelationView from './CorrelationView';
 import './ReportesDashboard.css';
 
 function ReportesDashboard() {
@@ -91,6 +93,18 @@ function ReportesDashboard() {
             >
               Resultados
             </button>
+            <button
+              className={`tab-button ${vistaActiva === 'regresion' ? 'active' : ''}`}
+              onClick={() => setVistaActiva('regresion')}
+            >
+              Regresión
+            </button>
+            <button
+              className={`tab-button ${vistaActiva === 'correlacion' ? 'active' : ''}`}
+              onClick={() => setVistaActiva('correlacion')}
+            >
+              Correlación
+            </button>
           </div>
         </div>
       </div>
@@ -115,6 +129,43 @@ function ReportesDashboard() {
                 <ReporteForm onReporteGenerado={handleReporteGenerado} />
               </div>
             </div>
+          </div>
+        ) : vistaActiva === 'resultados' ? (
+          <div className="resultados-section">
+            <div className="resultados-panel">
+              <div className="panel-header">
+                <h2>📋 Resultados del Reporte</h2>
+                <div className="resultados-controls">
+                  <button 
+                    className="btn-secondary"
+                    onClick={handleVolverGenerador}
+                  >
+                    ← Volver al Generador
+                  </button>
+                  {reporteData && (
+                    <span className="resultados-info">
+                      {reporteData.total_registros} registros encontrados
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="panel-body">
+                {reporteData && (
+                  <TablaReporte
+                    datos={reporteData.datos}
+                    totalRegistros={reporteData.total_registros}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        ) : vistaActiva === 'regresion' ? (
+          <div className="regresion-section">
+            <RegressionView colecciones={colecciones} />
+          </div>
+        ) : vistaActiva === 'correlacion' ? (
+          <div className="correlacion-section">
+            <CorrelationView colecciones={colecciones} />
           </div>
         ) : (
           <div className="resultados-section">

@@ -18,51 +18,57 @@ const api = axios.create({
 });
 
 export const reportesAPI = {
-  obtenerColecciones: () => api.get('/api/reportes/colecciones'),
+  obtenerColecciones: () => api.get('/reportes/colecciones'),
   
   obtenerEstadisticas: (coleccion) => 
-    api.get(`/api/reportes/estadisticas/${coleccion}`),
+    api.get(`/reportes/estadisticas/${coleccion}`),
   
-  generarReporte: (datos) => api.post('/api/reportes/generar', datos),
+  generarReporte: (datos) => api.post('/reportes/generar', datos),
   
   obtenerEsquemaColeccion: (coleccion) =>
-    api.get(`/api/reportes/esquema/${coleccion}`),
+    api.get(`/reportes/esquema/${coleccion}`),
   
   obtenerValoresUnicos: (coleccion, campo) =>
-    api.get(`/api/reportes/valores-unicos/${coleccion}/${campo}`),
+    api.get(`/reportes/valores-unicos/${coleccion}/${campo}`),
 
   conteoPorCampo: (coleccion, campo) =>
-    api.get(`/api/reportes/conteo-por-campo/${coleccion}/${campo}`),
+    api.get(`/reportes/conteo-por-campo/${coleccion}/${campo}`),
 
   conteoPorAnio: (coleccion, campo, formato = "%b %d, %Y") =>
-    api.get(`/api/reportes/conteo-por-anio/${coleccion}/${campo}`, { params: { formato } }),
+    api.get(`/reportes/conteo-por-anio/${coleccion}/${campo}`, { params: { formato } }),
 
   conteoGeneros: (coleccion, campo = "Genres") =>
-    api.get(`/api/reportes/conteo-generos/${coleccion}`, { params: { campo } }),
+    api.get(`/reportes/conteo-generos/${coleccion}`, { params: { campo } }),
 
   ratingPromedio: (coleccion, campo = "Rating") =>
-    api.get(`/api/reportes/rating-promedio/${coleccion}`, { params: { campo } }),
+    api.get(`/reportes/rating-promedio/${coleccion}`, { params: { campo } }),
 
   distribucionRating: (coleccion, campo = "Rating") =>
-    api.get(`/api/reportes/distribucion-rating/${coleccion}`, { params: { campo } }),
+    api.get(`/reportes/distribucion-rating/${coleccion}`, { params: { campo } }),
 
   conteoDesarrolladores: (coleccion, campo = "Developers") =>
-    api.get(`/api/reportes/conteo-desarrolladores/${coleccion}`, { params: { campo } }),
+    api.get(`/reportes/conteo-desarrolladores/${coleccion}`, { params: { campo } }),
 
   topJuegosPopulares: (coleccion, limite = 20) =>
-    api.get(`/api/reportes/top-juegos-populares/${coleccion}`, { params: { limite } }),
+    api.get(`/reportes/top-juegos-populares/${coleccion}`, { params: { limite } }),
 
   metricasDashboard: (coleccion) =>
-    api.get(`/api/reportes/metricas-dashboard/${coleccion}`),
+    api.get(`/reportes/metricas-dashboard/${coleccion}`),
 
   hiddenGems: (coleccion, limite = 5) =>
-    api.get(`/api/reportes/hidden-gems/${coleccion}`, { params: { limite } }),
+    api.get(`/reportes/hidden-gems/${coleccion}`, { params: { limite } }),
 
   trendingGames: (coleccion, limite = 5) =>
-    api.get(`/api/reportes/trending-games/${coleccion}`, { params: { limite } }),
+    api.get(`/reportes/trending-games/${coleccion}`, { params: { limite } }),
 
   topRatedGames: (coleccion, limite = 5) =>
-    api.get(`/api/reportes/top-rated-games/${coleccion}`, { params: { limite } }),
+    api.get(`/reportes/top-rated-games/${coleccion}`, { params: { limite } }),
+  
+  // Regresión lineal
+  regresionLineal: (payload) => api.post('/reportes/regresion-lineal', payload),
+  
+  // Matriz de correlación
+  matrizCorrelacion: (payload) => api.post('/reportes/correlacion-matriz', payload),
 };
 
 export default api;

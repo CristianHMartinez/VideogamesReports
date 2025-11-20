@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.database import get_database
-from app.models import ReporteRequest, ReporteResponse
+from app.models import ReporteRequest, ReporteResponse, RegresionRequest, RegresionResponse
+from app.models import CorrelacionRequest, CorrelacionResponse
 from app.services.reporte_service import ReporteService
+import traceback
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 router = APIRouter(prefix="/api/reportes", tags=["reportes"])
@@ -158,6 +160,57 @@ async def top_juegos_populares(
         service = ReporteService(db)
         return await service.obtener_top_juegos_populares(coleccion, limite)
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/regresion-lineal", response_model=RegresionResponse)
+async def regresion_lineal(
+    request: RegresionRequest,
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Ajusta una regresión lineal usando campos numéricos de una colección.
+
+    - `campo_y` es obligatorio (variable objetivo).
+    - Especifique `campo_x` (único) o `campos_x` (lista) para features.
+    """
+    try:
+        service = ReporteService(db)
+        resultado = await service.regresion_lineal(
+            coleccion=request.coleccion,
+            campo_x=request.campo_x,
+            campos_x=request.campos_x,
+            campo_y=request.campo_y,
+            filtros=request.filtros,
+            limite=request.limite
+        )
+        return resultado
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/correlacion-matriz", response_model=CorrelacionResponse)
+async def correlacion_matriz(
+    request: CorrelacionRequest,
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Calcula la matriz de correlación para los campos numéricos solicitados.
+
+    Si `campos` es None, el servicio intentará inferir columnas numéricas.
+    """
+    try:
+        service = ReporteService(db)
+        print(f"[API] correlacion_matriz request: coleccion={request.coleccion} campos={request.campos} limite={request.limite}")
+        resultado = await service.calcular_matriz_correlacion(
+            coleccion=request.coleccion,
+            campos=request.campos,
+            filtros=request.filtros,
+            limite=request.limite
+        )
+        print(f"[API] correlacion_matriz resultado success={resultado.get('success')}")
+        return resultado
+    except Exception as e:
+        print('[API] Error en correlacion_matriz:', str(e))
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/metricas-dashboard/{coleccion}")

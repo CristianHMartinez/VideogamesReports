@@ -2,6 +2,9 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
 
 class ReporteService:
     def __init__(self, database: AsyncIOMotorDatabase):
@@ -798,10 +801,209 @@ class ReporteService:
             
         except Exception as e:
             print(f"Error en obtener_top_juegos_populares: {str(e)}")
+
+    async def regresion_lineal(
+        self,
+        coleccion: str,
+        campo_y: str,
+        campo_x: Optional[str] = None,
+        campos_x: Optional[List[str]] = None,
+        filtros: Dict[str, Any] = {},
+        limite: int = 10000
+    ) -> Dict[str, Any]:
+        """Ajusta una regresión lineal simple o múltiple sobre los campos especificados.
+
+        Retorna coeficientes, intercepto, R^2 y un ejemplo de predicciones.
+        """
+        try:
+            collection = self.db[coleccion]
+
+            # Construir proyección
+            projection = {"_id": 0}
+            features: List[str] = []
+            if campos_x:
+                for f in campos_x:
+                    projection[f] = 1
+                    features.append(f)
+            elif campo_x:
+                projection[campo_x] = 1
+                features.append(campo_x)
+            projection[campo_y] = 1
+
+            cursor = collection.find(filtros, projection).limit(limite)
+            datos = await cursor.to_list(length=limite)
+
+            if not datos:
+                return {
+                    "success": False,
+                    "mensaje": "No se encontraron registros",
+                    "coeficientes": [],
+                    "intercept": 0.0,
+                    "r2": 0.0,
+                    "n": 0,
+                    "ejemplo_predicciones": []
+                }
+
+            df = pd.DataFrame(datos)
+
+            # Convertir a valores numéricos
+            cols_to_convert = features + [campo_y]
+            for col in cols_to_convert:
+                if col in df.columns:
+                    df[col] = pd.to_numeric(df[col], errors='coerce')
+
+            df = df.dropna(subset=cols_to_convert)
+
+            if df.empty or len(features) == 0:
+                return {
+                    "success": False,
+                    "mensaje": "No hay datos numéricos válidos o no se especificaron features",
+                    "coeficientes": [],
+                    "intercept": 0.0,
+                    "r2": 0.0,
+                    "n": 0,
+                    "ejemplo_predicciones": []
+                }
+
+            X = df[features].values if len(features) > 1 else df[features[0]].values.reshape(-1, 1)
+            y = df[campo_y].values
+
+            model = LinearRegression()
+            model.fit(X, y)
+
+            preds = model.predict(X)
+            score = float(r2_score(y, preds))
+
+            coefs = [float(c) for c in np.atleast_1d(model.coef_).tolist()]
+            intercept = float(model.intercept_)
+
+            ejemplo = []
+            sample = df.head(5)
+            for _, row in sample.iterrows():
+                input_vals = {f: (row[f] if f in row else None) for f in features}
+                x_for_pred = row[features].values.reshape(1, -1) if len(features) > 1 else [row[features[0]]]
+                try:
+                    pred_val = float(model.predict(np.array(x_for_pred).reshape(1, -1))[0])
+                except Exception:
+                    pred_val = None
+                ejemplo.append({"input": input_vals, "y": float(row[campo_y]), "pred": pred_val})
+
             return {
-                "success": False, 
-                "juegos": [], 
-                "error": str(e)
+                "success": True,
+                "mensaje": "Regresión lineal ajustada",
+                "coeficientes": coefs,
+                "intercept": intercept,
+                "r2": score,
+                "n": len(df),
+                "ejemplo_predicciones": ejemplo
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "mensaje": "Error ajustando regresión: " + str(e),
+                "coeficientes": [],
+                "intercept": 0.0,
+                "r2": 0.0,
+                "n": 0,
+                "ejemplo_predicciones": []
+            }
+        return {
+            "success": False, 
+            "juegos": [], 
+            "error": str(e)
+        }
+
+    async def calcular_matriz_correlacion(
+        self,
+        coleccion: str,
+        campos: Optional[List[str]] = None,
+        filtros: Dict[str, Any] = {},
+        limite: int = 10000
+    ) -> Dict[str, Any]:
+        """Calcula la matriz de correlación Pearson entre campos numéricos.
+
+        Si `campos` es None se intentan inferir columnas numéricas a partir
+        de una muestra de documentos.
+        """
+        try:
+            collection = self.db[coleccion]
+            cursor = collection.find(filtros).limit(limite)
+            datos = await cursor.to_list(length=limite)
+
+            if not datos:
+                return {
+                    "success": False,
+                    "mensaje": "No se encontraron registros",
+                    "fields": [],
+                    "matrix": [],
+                    "n": 0
+                }
+
+            df = pd.DataFrame(datos)
+
+            # Si no se especificaron campos, inferir columnas que pueden convertirse a numéricas
+            if not campos:
+                posibles = []
+                for c in df.columns:
+                    if c == '_id':
+                        continue
+                    # intentar conversión a numérico en una muestra
+                    series = pd.to_numeric(df[c], errors='coerce')
+                    non_na = series.dropna()
+                    if len(non_na) >= max(1, min(10, len(df)//10)):
+                        posibles.append(c)
+                campos = posibles
+
+            # Convertir columnas seleccionadas a numéricas y filtrar
+            cols_validas = []
+            for c in campos:
+                if c in df.columns:
+                    df[c] = pd.to_numeric(df[c], errors='coerce')
+                    if df[c].dropna().shape[0] > 0:
+                        cols_validas.append(c)
+
+            if not cols_validas:
+                return {
+                    "success": False,
+                    "mensaje": "No se encontraron columnas numéricas válidas",
+                    "fields": [],
+                    "matrix": [],
+                    "n": 0
+                }
+
+            df_clean = df[cols_validas].dropna()
+            if df_clean.empty:
+                return {
+                    "success": False,
+                    "mensaje": "No hay suficientes datos numéricos después de limpiar NA",
+                    "fields": cols_validas,
+                    "matrix": [],
+                    "n": 0
+                }
+
+            corr = df_clean.corr(method='pearson').round(3)
+
+            # Convertir a matriz (lista de listas) y devolver campos
+            fields = list(corr.columns)
+            matrix = corr.values.tolist()
+
+            # asegurar floats nativos
+            matrix = [[float(v) for v in row] for row in matrix]
+
+            return {
+                "success": True,
+                "mensaje": "Matriz de correlación calculada",
+                "fields": fields,
+                "matrix": matrix,
+                "n": len(df_clean)
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "mensaje": "Error calculando correlación: " + str(e),
+                "fields": [],
+                "matrix": [],
+                "n": 0
             }
 
     async def obtener_metricas_dashboard(self, nombre_coleccion: str) -> Dict[str, Any]:

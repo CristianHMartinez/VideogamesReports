@@ -1,0 +1,27 @@
+.regression-view{
+  display:flex;
+  gap:16px;
+  padding:16px;
+}
+.regression-form{
+  width:320px;
+  background:#fff;
+  border-radius:8px;
+  padding:16px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+}
+.regression-form h3{margin-top:0}
+.regression-form label{display:block;margin-top:8px;font-size:13px;color:#333}
+.regression-form select,.regression-form input{width:100%;padding:8px;margin-top:6px;border:1px solid #e0e0e0;border-radius:6px}
+.form-actions{display:flex;gap:8px;margin-top:12px}
+.btn-primary{background:#16394F;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
+.btn-secondary{background:#f0f0f0;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
+
+.regression-results{flex:1}
+.results-card{background:#fff;padding:16px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+.metrics{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px}
+.metrics div{background:#fbfbfb;padding:8px;border-radius:6px}
+.ejemplo pre{margin:0;font-size:12px}
+.plot-section{margin-top:12px}
+.scatter{width:100%;height:320px;border-radius:6px;background:linear-gradient(180deg,#ffffff,#fbfcfe);padding:8px}
+.no-data{color:#888;padding:12px}
